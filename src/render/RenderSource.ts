@@ -2,5 +2,6 @@
 export interface RenderSource {
 	/** Vault path of the note, used to resolve links and embeds. */
 	readonly path: string;
+	readonly title: string;
 	readonly markdown: string;
 }

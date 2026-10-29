@@ -25,10 +25,15 @@
 		"esbuild": "^0.28.2",
 		"eslint": "^9.39.5",
 		"eslint-plugin-obsidianmd": "^0.4.2",
+		"happy-dom": "^21.0.4",
 		"obsidian": "^1.14.4",
+		"playwright": "^1.63.0",
 		"tslib": "^2.8.1",
 		"typescript": "^5.9.3",
 		"typescript-eslint": "^8.72.1",
 		"vitest": "^5.0.5"
+	},
+	"dependencies": {
+		"pagedjs": "^0.4.3"
 	}
 }
