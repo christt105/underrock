@@ -1,6 +1,7 @@
 import { afterAll, describe, expect, it } from "vitest";
 import type { Page } from "playwright";
 import { closeBrowser, paginate } from "../testing/paginate";
+import { OBSIDIAN_FIXTURE } from "../testing/obsidianFixture";
 import { longDocument, words } from "../testing/sampleContent";
 
 afterAll(closeBrowser);
@@ -77,6 +78,23 @@ describe("pagination", () => {
 		const [width, height] = (/\/MediaBox\s*\[\s*0 0 ([\d.]+) ([\d.]+)\s*\]/.exec(pdf) ?? []).slice(1).map(Number);
 		expect(width).toBeCloseTo((210 / 25.4) * 72, 0);
 		expect(height).toBeCloseTo((297 / 25.4) * 72, 0);
+		await page.close();
+	});
+
+	it("fits every element of a typical note inside the page and expands folded callouts", async () => {
+		const page = await paginate(OBSIDIAN_FIXTURE);
+		const overflowing = await page.$$eval(".pagedjs_page", (pages) =>
+			pages.flatMap((p) => {
+				const area = p.querySelector(".pagedjs_area")?.getBoundingClientRect();
+				if (area === undefined) return [];
+				const blocks = ":is(h1, h2, h3, h4, h5, h6, ul, ol, table, pre, blockquote, .callout, .math-block, img, svg):not([data-split-to])";
+				return Array.from(p.querySelectorAll(`.pagedjs_page_content ${blocks}`))
+					.filter((el) => el.getBoundingClientRect().right > area.right + 1)
+					.map((el) => el.tagName);
+			}),
+		);
+		expect(overflowing).toEqual([]);
+		expect(await page.locator(".callout.is-collapsed .callout-content p").isVisible()).toBe(true);
 		await page.close();
 	});
 });
