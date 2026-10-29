@@ -2,7 +2,7 @@
 
 Underrock is an Obsidian plugin for exporting notes to PDF, in the spirit of Overleaf: a paginated preview next to the note, fine control over typography, and a well-defined, reproducible result.
 
-It is in early development and cannot export anything yet. The current build only adds a *Show installed version* command, useful to check which build BRAT installed.
+It is in early development. On desktop, the *Export current note to PDF* command renders the active note with Obsidian's own renderer (math, callouts, diagrams and other plugins' output included), paginates it and saves a PDF wherever you choose. Page size, orientation, margins, language and how links to other notes appear are set in the plugin settings. *Show installed version* tells you which build BRAT installed.
 
 ## Install with BRAT
 
@@ -41,8 +41,10 @@ Headings stay with the content that follows them, and short code blocks, images,
 - `src/main.ts`: plugin entry point.
 - `src/render/`: the render pipeline, from a note to standalone HTML with its own stylesheet.
 - `src/pagination/`: page setup, page-break rules and the Paged.js document.
-- `src/engines/`: PDF engines behind the `PdfEngine` interface (HTML with Paged.js first, Typst later).
-- `src/settings/`: plugin settings.
+- `src/engines/`: PDF engines behind the `PdfEngine` interface. `html/` prints the paged document with Electron; a Typst engine can come later.
+- `src/export/`: the export command, and the `DocumentBuilder` shared with the preview.
+- `src/pdf/`: PDF post-processing with pdf-lib.
+- `src/settings/`: plugin settings, on Obsidian's declarative settings API.
 - `src/preview/`: the paginated preview view.
 
 ### Releasing

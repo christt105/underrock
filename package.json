@@ -35,6 +35,7 @@
 		"vitest": "^5.0.5"
 	},
 	"dependencies": {
-		"pagedjs": "^0.4.3"
+		"pagedjs": "^0.4.3",
+		"pdf-lib": "^1.17.1"
 	}
 }

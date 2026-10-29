@@ -5,5 +5,5 @@ export interface PdfEngine {
 	readonly id: string;
 	/** Whether the engine can run on the current platform. */
 	isAvailable(): boolean;
-	render(source: RenderSource): Promise<ArrayBuffer>;
+	render(source: RenderSource): Promise<Uint8Array>;
 }

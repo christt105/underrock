@@ -20,8 +20,10 @@ export default defineConfig([
 		},
 	},
 	{
-		files: ["src/**/*.test.ts"],
+		files: ["src/**/*.test.ts", "src/testing/**/*.ts"],
 		rules: {
+			"obsidianmd/no-nodejs-modules": "off",
+			"no-undef": "off",
 			"obsidianmd/prefer-create-el": "off",
 			"@microsoft/sdl/no-inner-html": "off",
 			"no-unsanitized/property": "off",
