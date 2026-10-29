@@ -8,6 +8,15 @@ afterAll(closeBrowser);
 
 const MM_TO_PX = 96 / 25.4;
 
+/** Font and size combinations that used to leave single lines or lone headings before the line-control hook. */
+const TYPESETTINGS: [string, string][] = [
+	["default", ""],
+	["serif 12pt", ":root { --ur-font-body: serif; --ur-size-body: 12pt; }"],
+	["Liberation Serif 10pt", ':root { --ur-font-body: "Liberation Serif"; --ur-size-body: 10pt; }'],
+	["sans-serif 11pt", ":root { --ur-font-body: sans-serif; --ur-size-body: 11pt; }"],
+	["monospace 11pt, line height 1.8", ":root { --ur-font-body: monospace; --ur-size-body: 11pt; --ur-line-height: 1.8; }"],
+];
+
 function pageCount(page: Page): Promise<number> {
 	return page.locator(".pagedjs_page").count();
 }
@@ -35,8 +44,8 @@ describe("pagination", () => {
 		await page.close();
 	});
 
-	it("never leaves a heading alone at the bottom of a page", async () => {
-		const page = await paginate(longDocument(120));
+	it.each(TYPESETTINGS)("never leaves a heading alone at the bottom of a page (%s)", async (_, css) => {
+		const page = await paginate(longDocument(120), { extraCss: [css] });
 		expect(await pageCount(page)).toBeGreaterThan(5);
 		const last = await lastBlockPerPage(page);
 		expect(last.filter((tag) => /^H[1-6]$/.test(tag))).toEqual([]);
@@ -60,8 +69,8 @@ describe("pagination", () => {
 		await page.close();
 	});
 
-	it("does not leave a single line of a paragraph on either side of a page break", async () => {
-		const page = await paginate(longDocument(120));
+	it.each(TYPESETTINGS)("does not leave a single line of a paragraph on either side of a page break (%s)", async (_, css) => {
+		const page = await paginate(longDocument(120), { extraCss: [css] });
 		const fragments = await page.$$eval("p[data-split-to], p[data-split-from]", (ps) =>
 			ps.map((p) => Math.round(p.getBoundingClientRect().height / parseFloat(getComputedStyle(p).lineHeight))),
 		);
