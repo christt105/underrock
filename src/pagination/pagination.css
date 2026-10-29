@@ -33,3 +33,9 @@ pre.underrock-short {
 .underrock-page-break {
 	break-after: page;
 }
+
+.pagedjs_margin-content {
+	font-family: var(--ur-font-body);
+	font-size: 9pt;
+	color: var(--ur-color-muted);
+}

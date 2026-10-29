@@ -1,6 +1,7 @@
 import { PluginSettingTab } from "obsidian";
 import type { App, SettingDefinitionItem } from "obsidian";
 import type { PageSize } from "../pagination/PageSize";
+import type { HorizontalPosition, MarginSlot } from "../running/MarginSlot";
 import type { SettingsHost } from "./SettingsHost";
 import { getSettingPath, setSettingPath } from "./settingPath";
 
@@ -10,6 +11,17 @@ const PAGE_SIZES: Record<PageSize, string> = {
 	Letter: "Letter (8.5 × 11 in)",
 	Legal: "Legal (8.5 × 14 in)",
 };
+
+const MARGIN_SLOT_NAMES: Record<MarginSlot, string> = {
+	"top-left": "Top left",
+	"top-center": "Top centre",
+	"top-right": "Top right",
+	"bottom-left": "Bottom left",
+	"bottom-center": "Bottom centre",
+	"bottom-right": "Bottom right",
+};
+
+const POSITION_NAMES: Record<HorizontalPosition, string> = { left: "Left", center: "Centre", right: "Right" };
 
 const HEADING_SIZES: [string, string][] = [1, 2, 3, 4, 5, 6].map((level) => [`typography.h${level}Size`, `Heading ${level} size`]);
 
@@ -83,6 +95,45 @@ export class UnderrockSettingTab extends PluginSettingTab {
 					},
 					{ name: "Text colour", control: { type: "color", key: "typography.textColor" } },
 					{ name: "Heading colour", control: { type: "color", key: "typography.headingColor" } },
+				],
+			},
+			{
+				type: "group",
+				heading: "Page numbers, header and footer",
+				items: [
+					{ name: "Page numbers", control: { type: "toggle", key: "headerFooter.pageNumbers" } },
+					{
+						name: "Page number position",
+						control: { type: "dropdown", key: "headerFooter.pageNumberPosition", options: MARGIN_SLOT_NAMES },
+					},
+					{
+						name: "Page number format",
+						desc: "Use {page} and {pages}, such as {page} / {pages}.",
+						control: { type: "text", key: "headerFooter.pageNumberFormat", placeholder: "{page}" },
+					},
+					{
+						name: "Header",
+						desc: "Text at the top of each page. Can use {title}, {date}, {section}, {page} and {pages}.",
+						control: { type: "text", key: "headerFooter.header" },
+					},
+					{
+						name: "Header position",
+						control: { type: "dropdown", key: "headerFooter.headerPosition", options: POSITION_NAMES },
+					},
+					{
+						name: "Footer",
+						desc: "Text at the bottom of each page, with the same variables as the header.",
+						control: { type: "text", key: "headerFooter.footer" },
+					},
+					{
+						name: "Footer position",
+						control: { type: "dropdown", key: "headerFooter.footerPosition", options: POSITION_NAMES },
+					},
+					{
+						name: "Number the first page",
+						desc: "Turn off to leave the first page without page number, header or footer.",
+						control: { type: "toggle", key: "headerFooter.onFirstPage" },
+					},
 				],
 			},
 			{

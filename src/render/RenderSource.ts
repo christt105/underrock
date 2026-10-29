@@ -4,6 +4,8 @@ export interface RenderSource {
 	readonly path: string;
 	readonly title: string;
 	readonly author?: string;
+	/** The note's `date` property as written, for the {date} variable. */
+	readonly date?: string;
 	/** Language from the note's frontmatter, for hyphenation. */
 	readonly lang?: string;
 	readonly markdown: string;
