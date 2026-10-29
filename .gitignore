@@ -1,0 +1,15 @@
+# npm
+node_modules
+
+# Build output, uploaded to GitHub releases instead
+main.js
+*.map
+
+# Obsidian
+data.json
+
+# Editors and OS
+.vscode
+.idea
+*.iml
+.DS_Store
