@@ -1,0 +1,10 @@
+{
+	"id": "underrock",
+	"name": "Underrock",
+	"version": "0.0.0",
+	"minAppVersion": "1.13.0",
+	"description": "Export notes to well-typeset PDFs with a live paginated preview.",
+	"author": "christt105",
+	"authorUrl": "https://github.com/christt105",
+	"isDesktopOnly": false
+}
