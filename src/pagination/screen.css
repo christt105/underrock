@@ -1,0 +1,16 @@
+html {
+	background: #e8e8e8;
+}
+
+.pagedjs_pages {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 16px;
+	padding: 16px 0;
+}
+
+.pagedjs_page {
+	background: #fff;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+}

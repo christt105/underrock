@@ -2,7 +2,10 @@ import type { HtmlDocumentParts } from "./HtmlDocumentParts";
 
 /** Assembles a standalone HTML document from a rendered note, its styles and scripts. */
 export function buildHtmlDocument(parts: HtmlDocumentParts): string {
-	const styles = parts.stylesheets.map((css) => `<style>${escapeRawText(css, "style")}</style>`).join("\n");
+	const styles = [
+		...parts.stylesheets.map((css) => `<style>${escapeRawText(css, "style")}</style>`),
+		...parts.screenStylesheets.map((css) => `<style media="screen">${escapeRawText(css, "style")}</style>`),
+	].join("\n");
 	const scripts = parts.scripts.map((js) => `<script>${escapeRawText(js, "script")}</script>`).join("\n");
 	return [
 		"<!DOCTYPE html>",

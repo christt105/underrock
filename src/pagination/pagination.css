@@ -1,0 +1,35 @@
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	break-after: avoid;
+}
+
+p,
+li {
+	orphans: 2;
+	widows: 2;
+}
+
+tr,
+img,
+svg,
+figure,
+.image-embed,
+.math-block,
+mjx-container[display="true"],
+.mermaid,
+.callout-title {
+	break-inside: avoid;
+}
+
+pre.underrock-short {
+	break-inside: avoid;
+}
+
+.page-break,
+.underrock-page-break {
+	break-after: page;
+}
