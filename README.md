@@ -35,6 +35,10 @@ underrock:
 
 `page` takes `size` (`A4`, `A5`, `Letter`, `Legal`), `landscape` and `marginTopMm`, `marginRightMm`, `marginBottomMm`, `marginLeftMm`. `typography` takes `bodyFont`, `headingFont`, `codeFont`, `bodySize`, `h1Size` to `h6Size` (points), `lineHeight`, `textColor`, `headingColor` (`#rrggbb`) and `fontsFolder`.
 
+## Page breaks
+
+Headings stay with the content that follows them, and short code blocks, images, display math and table rows are not split. To force a page break, put `<div class="page-break"></div>` on its own line in the note (`<div style="page-break-after: always;"></div>` works too).
+
 ## Development
 
 Requires Node.js 22 or later.
@@ -52,10 +56,6 @@ npm run build        # typecheck and production bundle
 To try it in a vault, clone the repository into `<vault>/.obsidian/plugins/underrock/`, run `npm run dev` there and enable the plugin. The [Hot Reload](https://github.com/pjeby/hot-reload) plugin reloads it on every rebuild.
 
 Unit tests use [Vitest](https://vitest.dev) and live next to the code as `*.test.ts`. The `obsidian` package only ships type definitions, so tested modules must not import it at runtime. Layout tests (`*.layout.test.ts`) paginate documents with Paged.js in Chromium through Playwright and check page breaks and the printed PDF; run `npx playwright install chromium` once before the first run.
-
-### Page breaks
-
-Headings stay with the content that follows them, and short code blocks, images, display math and table rows are not split. To force a page break, put `<div class="page-break"></div>` on its own line in the note (`<div style="page-break-after: always;"></div>` works too).
 
 ### Layout
 
