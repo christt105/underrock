@@ -10,7 +10,11 @@ It is in early development. *Open PDF preview* (command or ribbon icon) shows th
 2. In BRAT, choose *Add beta plugin* and enter `christt105/underrock`.
 3. Enable Underrock under Settings → Community plugins.
 
-### Per-note settings
+### Testing a pull request
+
+Every pull request publishes a preview pre-release tagged `X.Y.Z-beta.<run>.pr<number>`, and a bot comment on the pull request shows the current tag. In BRAT, choose *Add beta plugin with frozen version*, enter `christt105/underrock` and that tag. Each push to the pull request replaces the preview, and closing the pull request deletes it.
+
+## Per-note settings
 
 Any setting can be overridden for a single note with an `underrock` property in its frontmatter, using the same structure as the plugin settings. Unknown keys and invalid values are ignored.
 
@@ -30,10 +34,6 @@ underrock:
 ```
 
 `page` takes `size` (`A4`, `A5`, `Letter`, `Legal`), `landscape` and `marginTopMm`, `marginRightMm`, `marginBottomMm`, `marginLeftMm`. `typography` takes `bodyFont`, `headingFont`, `codeFont`, `bodySize`, `h1Size` to `h6Size` (points), `lineHeight`, `textColor`, `headingColor` (`#rrggbb`) and `fontsFolder`.
-
-### Testing a pull request
-
-Every pull request publishes a preview pre-release tagged `X.Y.Z-beta.<run>.pr<number>`, and a bot comment on the pull request shows the current tag. In BRAT, choose *Add beta plugin with frozen version*, enter `christt105/underrock` and that tag. Each push to the pull request replaces the preview, and closing the pull request deletes it.
 
 ## Development
 
