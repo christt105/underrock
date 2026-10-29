@@ -15,7 +15,7 @@ describe("preview frame", () => {
 		try {
 			const page = await browser.newPage({ viewport: { width: 600, height: 800 } });
 			await page.setContent('<iframe style="width: 600px; height: 800px; border: 0"></iframe>');
-			await page.$eval("iframe", (frame, srcdoc) => ((frame as HTMLIFrameElement).srcdoc = srcdoc), html);
+			await page.$eval("iframe", (frame, srcdoc) => (frame.srcdoc = srcdoc), html);
 			const frame = page.frames()[1];
 			if (frame === undefined) throw new Error("no frame");
 			await frame.waitForSelector(`html[${PAGE_COUNT_ATTRIBUTE}]`, { timeout: 30000 });
