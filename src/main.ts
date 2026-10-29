@@ -18,7 +18,7 @@ export default class UnderrockPlugin extends Plugin implements PreviewHost {
 
 	override async onload(): Promise<void> {
 		this.settings = loadSettings(await this.loadData());
-		this.engine = new HtmlPdfEngine(this.app, this.builder, this.scratchDir(), () => this.settings.language);
+		this.engine = new HtmlPdfEngine(this.app, this.builder, this.scratchDir());
 		this.addSettingTab(new UnderrockSettingTab(this.app, this));
 		this.registerView(PREVIEW_VIEW_TYPE, (leaf) => new PreviewView(leaf, this));
 

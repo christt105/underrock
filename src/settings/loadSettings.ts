@@ -1,18 +1,13 @@
-import { DEFAULT_SETTINGS } from "./UnderrockSettings";
+import { applyOverrides } from "./applyOverrides";
+import { ALLOWED_VALUES, DEFAULT_SETTINGS } from "./UnderrockSettings";
 import type { UnderrockSettings } from "./UnderrockSettings";
 
-/** Fills in missing fields of stored settings with defaults, so older data keeps working. */
+/** Stored settings over the defaults, so older or hand-edited data keeps working. */
 export function loadSettings(stored: unknown): UnderrockSettings {
-	const data = isRecord(stored) ? stored : {};
-	const page = isRecord(data.page) ? data.page : {};
-	const merged: UnderrockSettings = {
-		...DEFAULT_SETTINGS,
-		...data,
-		page: { ...DEFAULT_SETTINGS.page, ...page },
-	};
-	return merged;
+	return applyOverrides(DEFAULT_SETTINGS, stored, ALLOWED_VALUES);
 }
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-	return typeof value === "object" && value !== null && !Array.isArray(value);
+/** Settings for one note: the plugin settings with the note's `underrock` frontmatter on top. */
+export function settingsForNote(settings: UnderrockSettings, frontmatter: unknown): UnderrockSettings {
+	return applyOverrides(settings, frontmatter, ALLOWED_VALUES);
 }

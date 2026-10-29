@@ -2,13 +2,34 @@
 
 Underrock is an Obsidian plugin for exporting notes to PDF, in the spirit of Overleaf: a paginated preview next to the note, fine control over typography, and a well-defined, reproducible result.
 
-It is in early development. *Open PDF preview* (command or ribbon icon) shows the active note as paginated pages in a split next to it, refreshed as you type. On desktop, *Export current note to PDF* (or the preview's export button) renders the active note with Obsidian's own renderer (math, callouts, diagrams and other plugins' output included), paginates it and saves a PDF wherever you choose. Page size, orientation, margins, language and how links to other notes appear are set in the plugin settings. *Show installed version* tells you which build BRAT installed.
+It is in early development. *Open PDF preview* (command or ribbon icon) shows the active note as paginated pages in a split next to it, refreshed as you type. On desktop, *Export current note to PDF* (or the preview's export button) renders the active note with Obsidian's own renderer (math, callouts, diagrams and other plugins' output included), paginates it and saves a PDF wherever you choose. Page size, orientation, margins, fonts (including your own font files), sizes per heading level, line height, colours, language and how links to other notes appear are set in the plugin settings, and can be overridden per note. *Show installed version* tells you which build BRAT installed.
 
 ## Install with BRAT
 
 1. Install the [BRAT](https://github.com/TfTHacker/obsidian42-brat) community plugin.
 2. In BRAT, choose *Add beta plugin* and enter `christt105/underrock`.
 3. Enable Underrock under Settings → Community plugins.
+
+### Per-note settings
+
+Any setting can be overridden for a single note with an `underrock` property in its frontmatter, using the same structure as the plugin settings. Unknown keys and invalid values are ignored.
+
+```yaml
+---
+lang: es
+underrock:
+  page:
+    size: Letter
+    landscape: true
+  typography:
+    bodyFont: Literata
+    bodySize: 12
+    h1Size: 24
+    lineHeight: 1.4
+---
+```
+
+`page` takes `size` (`A4`, `A5`, `Letter`, `Legal`), `landscape` and `marginTopMm`, `marginRightMm`, `marginBottomMm`, `marginLeftMm`. `typography` takes `bodyFont`, `headingFont`, `codeFont`, `bodySize`, `h1Size` to `h6Size` (points), `lineHeight`, `textColor`, `headingColor` (`#rrggbb`) and `fontsFolder`.
 
 ### Testing a pull request
 
@@ -44,7 +65,8 @@ Headings stay with the content that follows them, and short code blocks, images,
 - `src/engines/`: PDF engines behind the `PdfEngine` interface. `html/` prints the paged document with Electron; a Typst engine can come later.
 - `src/export/`: the export command, and the `DocumentBuilder` shared with the preview.
 - `src/pdf/`: PDF post-processing with pdf-lib.
-- `src/settings/`: plugin settings, on Obsidian's declarative settings API.
+- `src/settings/`: plugin settings, on Obsidian's declarative settings API, and the per-note overrides.
+- `src/typography/`: typography settings turned into CSS variables and `@font-face` rules.
 - `src/preview/`: the paginated preview view, which loads the same document as the export into an iframe.
 
 ### Releasing

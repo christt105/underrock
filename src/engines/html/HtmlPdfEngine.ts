@@ -14,7 +14,6 @@ export class HtmlPdfEngine implements PdfEngine {
 		private readonly app: App,
 		private readonly builder: DocumentBuilder,
 		private readonly scratchDir: string,
-		private readonly language: () => string,
 	) {}
 
 	isAvailable(): boolean {
@@ -24,6 +23,7 @@ export class HtmlPdfEngine implements PdfEngine {
 	async render(source: RenderSource): Promise<Uint8Array> {
 		const html = await this.builder.build(source);
 		const pdf = await printHtmlToPdf(this.app.vault.adapter, this.scratchDir, html);
-		return setPdfMetadata(pdf, { title: source.title, author: source.author, language: source.lang ?? this.language() });
+		const language = source.lang ?? this.builder.settingsFor(source).language;
+		return setPdfMetadata(pdf, { title: source.title, author: source.author, language });
 	}
 }

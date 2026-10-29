@@ -9,6 +9,7 @@ export async function sourceFromFile(app: App, file: TFile, markdown?: string): 
 		author: nonEmptyString(frontmatter.author),
 		lang: nonEmptyString(frontmatter.lang),
 		markdown: markdown ?? (await app.vault.cachedRead(file)),
+		overrides: frontmatter.underrock,
 	};
 }
 
