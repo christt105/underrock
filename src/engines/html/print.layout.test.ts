@@ -9,24 +9,25 @@ import { buildPagedDocument } from "../../pagination/buildPagedDocument";
 import { DEFAULT_PAGE_SETUP } from "../../pagination/PageSetup";
 import { setPdfMetadata } from "../../pdf/setPdfMetadata";
 import { OBSIDIAN_FIXTURE } from "../../testing/obsidianFixture";
-import { WAIT_FOR_PAGINATION } from "./printHtmlToPdf";
+import { WAIT_FOR_PAGINATION, writeDocumentScript } from "./printHtmlToPdf";
 
 const dir = mkdtempSync(join(tmpdir(), "underrock-print-"));
 afterAll(() => rmSync(dir, { recursive: true, force: true }));
 
 describe("printing a paged document", () => {
-	it("loads from a file, waits for pagination and prints a PDF with embedded fonts, metadata and links", async () => {
+	it("writes the document into a page, waits for pagination and prints a PDF with embedded fonts, metadata and links", async () => {
 		const html = buildPagedDocument(
 			{ title: "Sample", html: OBSIDIAN_FIXTURE, mathCss: "" },
 			{ page: DEFAULT_PAGE_SETUP, lang: "en", baseUrl: "about:blank", extraCss: [] },
 		);
-		const file = join(dir, "print.html");
-		writeFileSync(file, html);
+		const file = join(dir, "host.html");
+		writeFileSync(file, "<!DOCTYPE html><html><body></body></html>");
 
 		const browser = await chromium.launch();
 		try {
 			const page = await browser.newPage();
 			await page.goto(pathToFileURL(file).href);
+			await page.evaluate(writeDocumentScript(html));
 			await page.evaluate(WAIT_FOR_PAGINATION);
 			const pages = await page.locator(".pagedjs_page").count();
 			const printed = await page.pdf({ preferCSSPageSize: true, printBackground: true });

@@ -1,5 +1,4 @@
 import { Platform } from "obsidian";
-import type { App } from "obsidian";
 import type { DocumentBuilder } from "../../export/DocumentBuilder";
 import { setPdfMetadata } from "../../pdf/setPdfMetadata";
 import type { RenderSource } from "../../render/RenderSource";
@@ -10,11 +9,7 @@ import { printHtmlToPdf } from "./printHtmlToPdf";
 export class HtmlPdfEngine implements PdfEngine {
 	readonly id = "html";
 
-	constructor(
-		private readonly app: App,
-		private readonly builder: DocumentBuilder,
-		private readonly scratchDir: string,
-	) {}
+	constructor(private readonly builder: DocumentBuilder) {}
 
 	isAvailable(): boolean {
 		return Platform.isDesktopApp;
@@ -22,7 +17,7 @@ export class HtmlPdfEngine implements PdfEngine {
 
 	async render(source: RenderSource): Promise<Uint8Array> {
 		const html = await this.builder.build(source);
-		const pdf = await printHtmlToPdf(this.app.vault.adapter, this.scratchDir, html);
+		const pdf = await printHtmlToPdf(html);
 		const language = source.lang ?? this.builder.settingsFor(source).language;
 		return setPdfMetadata(pdf, { title: source.title, author: source.author, language });
 	}

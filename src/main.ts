@@ -18,7 +18,7 @@ export default class UnderrockPlugin extends Plugin implements PreviewHost {
 
 	override async onload(): Promise<void> {
 		this.settings = loadSettings(await this.loadData());
-		this.engine = new HtmlPdfEngine(this.app, this.builder, this.scratchDir());
+		this.engine = new HtmlPdfEngine(this.builder);
 		this.addSettingTab(new UnderrockSettingTab(this.app, this));
 		this.registerView(PREVIEW_VIEW_TYPE, (leaf) => new PreviewView(leaf, this));
 
@@ -73,9 +73,5 @@ export default class UnderrockPlugin extends Plugin implements PreviewHost {
 		for (const leaf of this.app.workspace.getLeavesOfType(PREVIEW_VIEW_TYPE)) {
 			if (leaf.view instanceof PreviewView) leaf.view.refresh();
 		}
-	}
-
-	private scratchDir(): string {
-		return this.manifest.dir ?? `${this.app.vault.configDir}/plugins/${this.manifest.id}`;
 	}
 }

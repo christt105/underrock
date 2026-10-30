@@ -69,6 +69,18 @@ describe("pagination", () => {
 		await page.close();
 	});
 
+	it("never leaves a callout title alone at the bottom of a page", async () => {
+		const callout = (i: number) =>
+			`<div class="callout" data-callout="note"><div class="callout-title"><div class="callout-title-inner">Note ${i}</div></div><div class="callout-content"><p>${words(8, i)}</p></div></div>`;
+		const body = Array.from({ length: 60 }, (_, i) => `<p>${words(20 + ((i * 17) % 90), i)}</p>${callout(i)}`).join("");
+		const page = await paginate(body);
+		const lonelyTitles = await page.$$eval(".callout", (callouts) =>
+			callouts.filter((c) => c.querySelector(".callout-title") && (c.querySelector(".callout-content")?.textContent ?? "").trim() === "").length,
+		);
+		expect(lonelyTitles).toBe(0);
+		await page.close();
+	});
+
 	it.each(TYPESETTINGS)("does not leave a single line of a paragraph on either side of a page break (%s)", async (_, css) => {
 		const page = await paginate(longDocument(120), { extraCss: [css] });
 		const fragments = await page.$$eval("p[data-split-to], p[data-split-from]", (ps) =>

@@ -1,4 +1,4 @@
-import { Component, MarkdownRenderer, finishRenderMath, getFrontMatterInfo } from "obsidian";
+import { Component, MarkdownRenderer, finishRenderMath, getFrontMatterInfo, loadMathJax } from "obsidian";
 import type { App } from "obsidian";
 import type { CleanOptions } from "./CleanOptions";
 import type { RenderSource } from "./RenderSource";
@@ -16,7 +16,10 @@ export async function renderNote(app: App, source: RenderSource, options: CleanO
 	try {
 		const { contentStart } = getFrontMatterInfo(source.markdown);
 		await MarkdownRenderer.render(app, source.markdown.slice(contentStart), content, source.path, component);
-		await finishRenderMath();
+		if (content.querySelector(".math")) {
+			await loadMathJax();
+			await finishRenderMath();
+		}
 		await waitForSettled(content, { quietMs: 250, timeoutMs: 10000 });
 		cleanRenderedHtml(content, options);
 		return { title: source.title, html: content.innerHTML, mathCss: collectMathCss(activeDocument) };
