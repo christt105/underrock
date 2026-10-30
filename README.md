@@ -34,7 +34,39 @@ underrock:
 ```
 
 `page` takes `size` (`A4`, `A5`, `Letter`, `Legal`), `landscape` and `marginTopMm`, `marginRightMm`, `marginBottomMm`, `marginLeftMm`. `typography` takes `bodyFont`, `headingFont`, `codeFont`, `bodySize`, `h1Size` to `h6Size` (points), `lineHeight`, `textColor`, `headingColor` (`#rrggbb`) and `fontsFolder`. `headerFooter` takes `pageNumbers`, `pageNumberPosition` (`top-left` to `bottom-right`), `pageNumberFormat`, `header`, `headerPosition`, `footer`, `footerPosition` (`left`, `center`, `right`) and `onFirstPage`. Header, footer and page number accept `{page}`, `{pages}`, `{title}`, `{date}` (the note's `date` property, or today) and `{section}` (the current level 1 or 2 heading).
-`toc` takes `enabled`, `depth` (1 to 6) and `title`, and `bookmarks` is `true` or `false`.
+`template` and `templatesFolder` take a template name and a vault folder. `toc` takes `enabled`, `depth` (1 to 6) and `title`, and `bookmarks` is `true` or `false`.
+
+## Templates
+
+A template sets the base look of the document, like a LaTeX document class. Three come with the plugin: *Article* (the default), *Report* (each level 1 heading starts a new page, justified text, larger headings) and *Minimal* (sans-serif, compact, plain callouts). Choose one in the settings, or per note with `template` in the `underrock` property:
+
+```yaml
+underrock:
+  template: report
+```
+
+To make your own, set a *Templates folder* and put CSS files in it. Each file becomes a template named after the file, so `Thesis.css` is used with `template: Thesis`. A file with the same name as a built-in template replaces it. Relative URLs in the CSS, such as fonts or images, resolve from the file's folder. A template is applied before the typography settings: settings left at their default follow the template, and the ones you change win.
+
+A template can override any CSS rule of the document, and these variables:
+
+| Variable | Default | Use |
+|---|---|---|
+| `--ur-font-body` | Charter, Georgia, serif | Body text |
+| `--ur-font-heading` | the body font | Headings |
+| `--ur-font-code` | JetBrains Mono, monospace | Code |
+| `--ur-size-body` | `11pt` | Body text size |
+| `--ur-size-h1` to `--ur-size-h6` | `22pt`, `17pt`, `14pt`, `12pt`, `11pt`, `11pt` | Heading sizes |
+| `--ur-size-code` | `0.88em` | Code size, relative to the text around it |
+| `--ur-line-height` | `1.5` | Line height |
+| `--ur-paragraph-spacing` | `0.6em` | Space after paragraphs, lists, tables and blocks |
+| `--ur-color-text` | `#1a1a1a` | Text |
+| `--ur-color-heading` | the text colour | Headings |
+| `--ur-color-muted` | `#5c5c5c` | Quotes, finished tasks, footnotes, header and footer |
+| `--ur-color-accent` | `#2b5797` | Links |
+| `--ur-color-border` | `#d0d0d0` | Rules, quote and embed bars, table borders |
+| `--ur-color-code-bg` | `#f5f5f5` | Code and table header background |
+
+Page size and margins come from the page settings, not from the template.
 
 ## Table of contents and bookmarks
 

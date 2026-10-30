@@ -1,11 +1,14 @@
 import { TFile } from "obsidian";
 import type { App } from "obsidian";
+import { absoluteCssUrls } from "../pagination/absoluteCssUrls";
 import { buildPagedDocument } from "../pagination/buildPagedDocument";
 import { renderNote } from "../render/renderNote";
 import { marginBoxesCss } from "../running/marginBoxesCss";
 import type { RenderSource } from "../render/RenderSource";
 import { settingsForNote } from "../settings/loadSettings";
 import type { UnderrockSettings } from "../settings/UnderrockSettings";
+import { BUILT_IN_TEMPLATES } from "../templates/builtInTemplates";
+import { userTemplateFiles } from "../templates/userTemplateFiles";
 import { tocHtml } from "../toc/tocHtml";
 import type { FontFile } from "../typography/FontFile";
 import { FONT_EXTENSIONS, fontFaceCss } from "../typography/fontFaceCss";
@@ -35,10 +38,19 @@ export class DocumentBuilder {
 			leadingHtml: settings.toc.enabled ? [tocHtml(note.headings, settings.toc)] : [],
 			extraCss: [
 				fontFaceCss(this.fontFiles(settings.typography.fontsFolder)),
+				await this.templateCss(settings),
 				typographyCss(settings.typography),
 				marginBoxesCss(settings.headerFooter, { title: source.title, date }),
 			],
 		});
+	}
+
+	/** The chosen template's CSS: a user template of that name if there is one, else a built-in one, else none. */
+	private async templateCss(settings: UnderrockSettings): Promise<string> {
+		const name = settings.template.trim();
+		const file = userTemplateFiles(this.app, settings.templatesFolder).find((f) => f.basename === name);
+		if (file) return absoluteCssUrls(await this.app.vault.cachedRead(file), this.app.vault.getResourcePath(file));
+		return BUILT_IN_TEMPLATES.get(name) ?? "";
 	}
 
 	private fontFiles(folderPath: string): FontFile[] {
