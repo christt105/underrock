@@ -50,6 +50,12 @@ export class PreviewView extends ItemView {
 
 		this.registerEvent(this.app.workspace.on("active-leaf-change", () => this.followActiveNote()));
 		this.registerEvent(
+			this.app.workspace.on("file-open", (file) => {
+				if (file !== null && file === this.file) this.scheduleRender();
+				else this.followActiveNote();
+			}),
+		);
+		this.registerEvent(
 			this.app.workspace.on("editor-change", (_editor, info) => {
 				if (info.file === this.file) this.scheduleRender();
 			}),
