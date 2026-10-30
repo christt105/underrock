@@ -11,6 +11,8 @@ const PAGE_SIZES: Record<PageSize, string> = {
 	Legal: "Legal (8.5 × 14 in)",
 };
 
+const HEADING_SIZES: [string, string][] = [1, 2, 3, 4, 5, 6].map((level) => [`typography.h${level}Size`, `Heading ${level} size`]);
+
 const MARGINS: [string, string][] = [
 	["page.marginTopMm", "Top margin"],
 	["page.marginBottomMm", "Bottom margin"],
@@ -39,6 +41,48 @@ export class UnderrockSettingTab extends PluginSettingTab {
 						desc: "In millimetres.",
 						control: { type: "number" as const, key, min: 0, step: 1 },
 					})),
+				],
+			},
+			{
+				type: "group",
+				heading: "Typography",
+				items: [
+					{
+						name: "Body font",
+						desc: "Font name, or several separated by commas. Leave empty for the default serif.",
+						control: { type: "text", key: "typography.bodyFont", placeholder: "Charter, Georgia, serif" },
+					},
+					{
+						name: "Heading font",
+						desc: "Leave empty to use the body font.",
+						control: { type: "text", key: "typography.headingFont" },
+					},
+					{
+						name: "Code font",
+						control: { type: "text", key: "typography.codeFont", placeholder: "JetBrains Mono, monospace" },
+					},
+					{
+						name: "Fonts folder",
+						desc: "Font files in this folder (TTF, OTF, WOFF, WOFF2) can be used by name. Name them Family-Style, like Inter-Bold.ttf.",
+						control: { type: "folder", key: "typography.fontsFolder" },
+					},
+					{
+						name: "Body size",
+						desc: "In points.",
+						control: { type: "number", key: "typography.bodySize", min: 6, max: 72, step: 0.5 },
+					},
+					...HEADING_SIZES.map(([key, name]) => ({
+						name,
+						desc: "In points.",
+						control: { type: "number" as const, key, min: 6, max: 96, step: 0.5 },
+					})),
+					{
+						name: "Line height",
+						desc: "Multiple of the font size.",
+						control: { type: "number", key: "typography.lineHeight", min: 1, max: 3, step: 0.05 },
+					},
+					{ name: "Text colour", control: { type: "color", key: "typography.textColor" } },
+					{ name: "Heading colour", control: { type: "color", key: "typography.headingColor" } },
 				],
 			},
 			{

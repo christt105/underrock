@@ -7,4 +7,6 @@ export interface RenderSource {
 	/** Language from the note's frontmatter, for hyphenation. */
 	readonly lang?: string;
 	readonly markdown: string;
+	/** The note's `underrock` frontmatter, which overrides plugin settings for this note. */
+	readonly overrides?: unknown;
 }
