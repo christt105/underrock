@@ -5,5 +5,7 @@ export interface HtmlDocumentParts {
 	readonly baseUrl: string;
 	readonly bodyHtml: string;
 	readonly stylesheets: readonly string[];
+	/** Styles that only apply on screen. Paged.js leaves them out of pagination. */
+	readonly screenStylesheets: readonly string[];
 	readonly scripts: readonly string[];
 }

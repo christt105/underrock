@@ -7,6 +7,7 @@ const PARTS = {
 	baseUrl: "app://obsidian.md/",
 	bodyHtml: "<p>Hi</p>",
 	stylesheets: ["p { color: red }"],
+	screenStylesheets: ["html { background: grey }"],
 	scripts: ['window.x = "</script>";'],
 };
 
@@ -16,6 +17,7 @@ describe("buildHtmlDocument", () => {
 		expect(html.startsWith("<!DOCTYPE html>")).toBe(true);
 		expect(html).toContain('<base href="app://obsidian.md/">');
 		expect(html).toContain("<style>p { color: red }</style>");
+		expect(html).toContain('<style media="screen">html { background: grey }</style>');
 		expect(html).toContain('<body class="underrock-document"><p>Hi</p></body>');
 	});
 
