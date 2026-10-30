@@ -1,1 +1,8 @@
-/* Underrock */
+.underrock-render-host {
+	position: fixed;
+	top: 0;
+	left: -10000px;
+	width: 160mm;
+	visibility: hidden;
+	pointer-events: none;
+}

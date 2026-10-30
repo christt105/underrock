@@ -19,4 +19,12 @@ export default defineConfig([
 			"@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
 		},
 	},
+	{
+		files: ["src/**/*.test.ts"],
+		rules: {
+			"obsidianmd/prefer-create-el": "off",
+			"@microsoft/sdl/no-inner-html": "off",
+			"no-unsanitized/property": "off",
+		},
+	},
 ]);
