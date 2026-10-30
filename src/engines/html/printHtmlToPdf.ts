@@ -1,8 +1,14 @@
-import type { DataAdapter } from "obsidian";
 import { PAGE_COUNT_ATTRIBUTE, PAGINATED_EVENT } from "../../pagination/pagedScripts";
 import type { PrintWebview } from "./PrintWebview";
 
 const PAGINATION_TIMEOUT_MS = 120000;
+
+/**
+ * A page of the app that the print webview can load. Vault resource URLs don't load in a webview,
+ * so the document is written into this page instead, where vault images and MathJax fonts resolve
+ * from the app's own origin.
+ */
+const PRINT_HOST_URL = "app://obsidian.md/help.html";
 
 /** Script evaluated in the printed page; resolves once Paged.js has laid out every page. */
 export const WAIT_FOR_PAGINATION = `new Promise((resolve, reject) => {
@@ -11,24 +17,23 @@ export const WAIT_FOR_PAGINATION = `new Promise((resolve, reject) => {
 	setTimeout(() => reject(new Error("Pagination timed out")), ${PAGINATION_TIMEOUT_MS});
 })`;
 
-/**
- * Prints a self-paginating HTML document to PDF with Electron's `printToPDF`.
- * The document is written next to the plugin and loaded through the app's resource URL,
- * so vault images and MathJax fonts resolve from the same origin as in the app.
- */
-export async function printHtmlToPdf(adapter: DataAdapter, scratchDir: string, html: string): Promise<Uint8Array> {
-	const path = `${scratchDir}/.underrock-print-${Date.now()}.html`;
-	await adapter.write(path, html);
+/** Script that replaces the current page with `html`, running its scripts. */
+export function writeDocumentScript(html: string): string {
+	return `document.open(); document.write(${JSON.stringify(html)}); document.close(); true`;
+}
+
+/** Prints a self-paginating HTML document to PDF with Electron's `printToPDF`. */
+export async function printHtmlToPdf(html: string): Promise<Uint8Array> {
 	const webview = activeDocument.body.createEl("webview" as keyof HTMLElementTagNameMap, { cls: "underrock-print-webview" }) as PrintWebview;
 	try {
-		const loaded = once(webview, "did-finish-load", "did-fail-load");
-		webview.setAttribute("src", adapter.getResourcePath(path));
-		if ((await loaded) === "did-fail-load") throw new Error("Could not load the document to print");
+		const ready = once(webview, "dom-ready", "did-fail-load");
+		webview.setAttribute("src", PRINT_HOST_URL);
+		if ((await ready) === "did-fail-load") throw new Error("Could not open the page to print");
+		await webview.executeJavaScript(writeDocumentScript(html));
 		await webview.executeJavaScript(WAIT_FOR_PAGINATION);
 		return await webview.printToPDF({ preferCSSPageSize: true, printBackground: true });
 	} finally {
 		webview.remove();
-		await adapter.remove(path);
 	}
 }
 
