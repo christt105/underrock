@@ -2,6 +2,8 @@ import { PluginSettingTab } from "obsidian";
 import type { App, SettingDefinitionItem } from "obsidian";
 import type { PageSize } from "../pagination/PageSize";
 import type { HorizontalPosition, MarginSlot } from "../running/MarginSlot";
+import { BUILT_IN_TEMPLATES } from "../templates/builtInTemplates";
+import { userTemplateFiles } from "../templates/userTemplateFiles";
 import type { SettingsHost } from "./SettingsHost";
 import { getSettingPath, setSettingPath } from "./settingPath";
 
@@ -42,6 +44,22 @@ export class UnderrockSettingTab extends PluginSettingTab {
 
 	override getSettingDefinitions(): SettingDefinitionItem[] {
 		return [
+			{
+				type: "group",
+				heading: "Template",
+				items: [
+					{
+						name: "Template",
+						desc: "Base style of the document. Settings below that you change apply on top of it.",
+						control: { type: "dropdown", key: "template", options: this.templateOptions() },
+					},
+					{
+						name: "Templates folder",
+						desc: "Each CSS file in this folder becomes a template named after the file.",
+						control: { type: "folder", key: "templatesFolder" },
+					},
+				],
+			},
 			{
 				type: "group",
 				heading: "Page",
@@ -179,6 +197,15 @@ export class UnderrockSettingTab extends PluginSettingTab {
 				],
 			},
 		];
+	}
+
+	private templateOptions(): Record<string, string> {
+		const options: Record<string, string> = { article: "Article", report: "Report", minimal: "Minimal" };
+		for (const name of BUILT_IN_TEMPLATES.keys()) options[name] ??= name;
+		for (const file of userTemplateFiles(this.app, this.host.settings.templatesFolder)) options[file.basename] = file.basename;
+		const current = this.host.settings.template;
+		options[current] ??= current;
+		return options;
 	}
 
 	override getControlValue(key: string): unknown {

@@ -17,6 +17,14 @@ describe("typographyCss", () => {
 		expect(css).not.toContain("--ur-color-text");
 	});
 
+	it("leaves settings at their default to the template", () => {
+		expect(typographyCss(DEFAULT_TYPOGRAPHY)).toBe("");
+		const css = typographyCss({ ...DEFAULT_TYPOGRAPHY, h1Size: 30 });
+		expect(css).toContain("--ur-size-h1: 30pt;");
+		expect(css).not.toContain("--ur-size-body");
+		expect(css).not.toContain("--ur-color-heading");
+	});
+
 	it("sets fonts when given", () => {
 		expect(typographyCss({ ...DEFAULT_TYPOGRAPHY, codeFont: "Fira Code" })).toContain('--ur-font-code: "Fira Code";');
 	});
