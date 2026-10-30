@@ -210,7 +210,7 @@ thead th {
 mjx-container[display="true"] {
 	display: block;
 	text-align: center;
-	overflow-x: auto;
+	overflow: visible;
 }
 
 .mermaid {
