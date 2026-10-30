@@ -156,8 +156,13 @@ export class UnderrockSettingTab extends PluginSettingTab {
 			},
 			{
 				type: "group",
-				heading: "Contents and bookmarks",
+				heading: "Cover, contents and bookmarks",
 				items: [
+					{
+						name: "Cover page",
+						desc: "Opens the document with a page showing the note's title, author and date, without page number, header or footer.",
+						control: { type: "toggle", key: "cover" },
+					},
 					{
 						name: "Table of contents",
 						desc: "Adds a page before the note that lists its headings with their page numbers.",

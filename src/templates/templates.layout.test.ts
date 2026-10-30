@@ -5,6 +5,7 @@ import { DEFAULT_TOC } from "../toc/TocSettings";
 import { tocHtml } from "../toc/tocHtml";
 import { DEFAULT_TYPOGRAPHY } from "../typography/Typography";
 import { typographyCss } from "../typography/typographyCss";
+import { coverHtml } from "../cover/coverHtml";
 import { BUILT_IN_TEMPLATES } from "./builtInTemplates";
 
 afterAll(closeBrowser);
@@ -39,6 +40,16 @@ describe("templates", () => {
 		expect(style.size).toBe("40px");
 		expect(style.body).toBe("14px");
 		await page.close();
+	});
+
+	it("keeps the cover centred", async () => {
+		const cover = coverHtml({ title: "Title", author: "Author", date: "Date" });
+		for (const name of BUILT_IN_TEMPLATES.keys()) {
+			const page = await paginate(CHAPTERS, { extraCss: [template(name)], leadingHtml: [cover] });
+			const aligns = await page.$$eval(".underrock-cover > *", (lines) => lines.map((line) => getComputedStyle(line).textAlign));
+			expect(aligns, name).toEqual(["center", "center", "center"]);
+			await page.close();
+		}
 	});
 
 	it("article is the base style", async () => {

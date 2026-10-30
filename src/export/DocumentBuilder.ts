@@ -1,5 +1,6 @@
 import { TFile } from "obsidian";
 import type { App } from "obsidian";
+import { coverHtml } from "../cover/coverHtml";
 import { absoluteCssUrls } from "../pagination/absoluteCssUrls";
 import { buildPagedDocument } from "../pagination/buildPagedDocument";
 import { renderNote } from "../render/renderNote";
@@ -35,7 +36,10 @@ export class DocumentBuilder {
 			page: settings.page,
 			lang,
 			baseUrl: activeDocument.baseURI,
-			leadingHtml: settings.toc.enabled ? [tocHtml(note.headings, settings.toc)] : [],
+			leadingHtml: [
+				settings.cover ? coverHtml({ title: source.title, author: source.author, date }) : "",
+				settings.toc.enabled ? tocHtml(note.headings, settings.toc) : "",
+			],
 			extraCss: [
 				fontFaceCss(this.fontFiles(settings.typography.fontsFolder)),
 				await this.templateCss(settings),
