@@ -29,6 +29,21 @@ pre.underrock-short {
 	break-inside: avoid;
 }
 
+.underrock-toc {
+	break-after: page;
+}
+
+.underrock-toc-entry {
+	break-inside: avoid;
+}
+
+.underrock-toc-entry a::after {
+	content: target-counter(attr(href), page);
+	margin-left: auto;
+	padding-left: 1em;
+	font-variant-numeric: tabular-nums;
+}
+
 .page-break,
 .underrock-page-break {
 	break-after: page;

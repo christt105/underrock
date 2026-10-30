@@ -138,6 +138,28 @@ export class UnderrockSettingTab extends PluginSettingTab {
 			},
 			{
 				type: "group",
+				heading: "Contents and bookmarks",
+				items: [
+					{
+						name: "Table of contents",
+						desc: "Adds a page before the note that lists its headings with their page numbers.",
+						control: { type: "toggle", key: "toc.enabled" },
+					},
+					{
+						name: "Contents depth",
+						desc: "Deepest heading level listed, from 1 to 6.",
+						control: { type: "number", key: "toc.depth", min: 1, max: 6, step: 1 },
+					},
+					{ name: "Contents title", control: { type: "text", key: "toc.title", placeholder: "Contents" } },
+					{
+						name: "PDF bookmarks",
+						desc: "Adds a bookmark for each heading to the exported PDF.",
+						control: { type: "toggle", key: "bookmarks" },
+					},
+				],
+			},
+			{
+				type: "group",
 				heading: "Content",
 				items: [
 					{

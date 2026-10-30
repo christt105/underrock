@@ -3,6 +3,8 @@ import type { PageSetup } from "../pagination/PageSetup";
 import type { LinkMode } from "../render/LinkMode";
 import { DEFAULT_HEADER_FOOTER, HORIZONTAL_POSITIONS, MARGIN_SLOTS } from "../running/HeaderFooter";
 import type { HeaderFooter } from "../running/HeaderFooter";
+import { DEFAULT_TOC } from "../toc/TocSettings";
+import type { TocSettings } from "../toc/TocSettings";
 import { DEFAULT_TYPOGRAPHY } from "../typography/Typography";
 import type { Typography } from "../typography/Typography";
 import type { AllowedValues } from "./applyOverrides";
@@ -11,6 +13,9 @@ export interface UnderrockSettings {
 	page: PageSetup;
 	typography: Typography;
 	headerFooter: HeaderFooter;
+	toc: TocSettings;
+	/** Whether the PDF gets a bookmark for each heading. */
+	bookmarks: boolean;
 	links: LinkMode;
 	/** Default document language (BCP 47), used for hyphenation. A note's `lang` frontmatter overrides it. */
 	language: string;
@@ -20,6 +25,8 @@ export const DEFAULT_SETTINGS: UnderrockSettings = {
 	page: DEFAULT_PAGE_SETUP,
 	typography: DEFAULT_TYPOGRAPHY,
 	headerFooter: DEFAULT_HEADER_FOOTER,
+	toc: DEFAULT_TOC,
+	bookmarks: true,
 	links: "text",
 	language: "en",
 };

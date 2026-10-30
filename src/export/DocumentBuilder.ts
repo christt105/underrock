@@ -6,6 +6,7 @@ import { marginBoxesCss } from "../running/marginBoxesCss";
 import type { RenderSource } from "../render/RenderSource";
 import { settingsForNote } from "../settings/loadSettings";
 import type { UnderrockSettings } from "../settings/UnderrockSettings";
+import { tocHtml } from "../toc/tocHtml";
 import type { FontFile } from "../typography/FontFile";
 import { FONT_EXTENSIONS, fontFaceCss } from "../typography/fontFaceCss";
 import { typographyCss } from "../typography/typographyCss";
@@ -31,6 +32,7 @@ export class DocumentBuilder {
 			page: settings.page,
 			lang,
 			baseUrl: activeDocument.baseURI,
+			leadingHtml: settings.toc.enabled ? [tocHtml(note.headings, settings.toc)] : [],
 			extraCss: [
 				fontFaceCss(this.fontFiles(settings.typography.fontsFolder)),
 				typographyCss(settings.typography),
