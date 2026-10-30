@@ -2,7 +2,7 @@
 
 Underrock is an Obsidian plugin for exporting notes to PDF, in the spirit of Overleaf: a paginated preview next to the note, fine control over typography, and a well-defined, reproducible result.
 
-It is in early development. *Open PDF preview* (command or ribbon icon) shows the active note as paginated pages in a split next to it, refreshed as you type. On desktop, *Export current note to PDF* (or the preview's export button) renders the active note with Obsidian's own renderer (math, callouts, diagrams and other plugins' output included), paginates it and saves a PDF wherever you choose. Page size, orientation, margins, fonts (including your own font files), sizes per heading level, line height, colours, language and how links to other notes appear are set in the plugin settings, and can be overridden per note. *Show installed version* tells you which build BRAT installed.
+It is in early development. *Open PDF preview* (command or ribbon icon) shows the active note as paginated pages in a split next to it, refreshed as you type. On desktop, *Export current note to PDF* (or the preview's export button) renders the active note with Obsidian's own renderer (math, callouts, diagrams and other plugins' output included), paginates it and saves a PDF wherever you choose. Page size, orientation, margins, fonts (including your own font files), sizes per heading level, line height, colours, page numbers, header and footer, language and how links to other notes appear are set in the plugin settings, and can be overridden per note. *Show installed version* tells you which build BRAT installed.
 
 ## Install with BRAT
 
@@ -33,7 +33,7 @@ underrock:
 ---
 ```
 
-`page` takes `size` (`A4`, `A5`, `Letter`, `Legal`), `landscape` and `marginTopMm`, `marginRightMm`, `marginBottomMm`, `marginLeftMm`. `typography` takes `bodyFont`, `headingFont`, `codeFont`, `bodySize`, `h1Size` to `h6Size` (points), `lineHeight`, `textColor`, `headingColor` (`#rrggbb`) and `fontsFolder`.
+`page` takes `size` (`A4`, `A5`, `Letter`, `Legal`), `landscape` and `marginTopMm`, `marginRightMm`, `marginBottomMm`, `marginLeftMm`. `typography` takes `bodyFont`, `headingFont`, `codeFont`, `bodySize`, `h1Size` to `h6Size` (points), `lineHeight`, `textColor`, `headingColor` (`#rrggbb`) and `fontsFolder`. `headerFooter` takes `pageNumbers`, `pageNumberPosition` (`top-left` to `bottom-right`), `pageNumberFormat`, `header`, `headerPosition`, `footer`, `footerPosition` (`left`, `center`, `right`) and `onFirstPage`. Header, footer and page number accept `{page}`, `{pages}`, `{title}`, `{date}` (the note's `date` property, or today) and `{section}` (the current level 1 or 2 heading).
 
 ## Page breaks
 
@@ -67,6 +67,7 @@ Unit tests use [Vitest](https://vitest.dev) and live next to the code as `*.test
 - `src/pdf/`: PDF post-processing with pdf-lib.
 - `src/settings/`: plugin settings, on Obsidian's declarative settings API, and the per-note overrides.
 - `src/typography/`: typography settings turned into CSS variables and `@font-face` rules.
+- `src/running/`: page numbers, header and footer as `@page` margin boxes.
 - `src/preview/`: the paginated preview view, which loads the same document as the export into an iframe.
 
 ### Releasing
