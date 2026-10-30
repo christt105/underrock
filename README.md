@@ -34,7 +34,7 @@ underrock:
 ```
 
 `page` takes `size` (`A4`, `A5`, `Letter`, `Legal`), `landscape` and `marginTopMm`, `marginRightMm`, `marginBottomMm`, `marginLeftMm`. `typography` takes `bodyFont`, `headingFont`, `codeFont`, `bodySize`, `h1Size` to `h6Size` (points), `lineHeight`, `textColor`, `headingColor` (`#rrggbb`) and `fontsFolder`. `headerFooter` takes `pageNumbers`, `pageNumberPosition` (`top-left` to `bottom-right`), `pageNumberFormat`, `header`, `headerPosition`, `footer`, `footerPosition` (`left`, `center`, `right`) and `onFirstPage`. Header, footer and page number accept `{page}`, `{pages}`, `{title}`, `{date}` (the note's `date` property, or today) and `{section}` (the current level 1 or 2 heading).
-`template` and `templatesFolder` take a template name and a vault folder. `toc` takes `enabled`, `depth` (1 to 6) and `title`, and `bookmarks` is `true` or `false`.
+`template` and `templatesFolder` take a template name and a vault folder. `cover` is `true` or `false`. `toc` takes `enabled`, `depth` (1 to 6) and `title`, and `bookmarks` is `true` or `false`.
 
 ## Templates
 
@@ -67,6 +67,10 @@ A template can override any CSS rule of the document, and these variables:
 | `--ur-color-code-bg` | `#f5f5f5` | Code and table header background |
 
 Page size and margins come from the page settings, not from the template.
+
+## Cover page
+
+Turn on *Cover page* to open the document with a title page showing the note's `title` (or its file name), `author` and `date` (or today), in the template's fonts and colours and without page number, header or footer. It still counts as page 1.
 
 ## Table of contents and bookmarks
 

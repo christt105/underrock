@@ -346,3 +346,30 @@ a.footnote-link {
 	color: inherit;
 	text-decoration: none;
 }
+
+.underrock-cover {
+	padding-top: 45%;
+}
+
+.underrock-cover > * {
+	text-align: center;
+}
+
+.underrock-cover-title {
+	color: var(--ur-color-heading);
+	font-family: var(--ur-font-heading);
+	font-size: calc(var(--ur-size-h1) * 1.4);
+	font-weight: 700;
+	line-height: 1.2;
+	margin: 0 0 1.5em;
+}
+
+.underrock-cover-author {
+	font-size: var(--ur-size-h3);
+	margin: 0 0 0.5em;
+}
+
+.underrock-cover-date {
+	color: var(--ur-color-muted);
+	margin: 0;
+}

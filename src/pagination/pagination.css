@@ -29,6 +29,20 @@ pre.underrock-short {
 	break-inside: avoid;
 }
 
+.underrock-cover {
+	page: cover;
+	break-after: page;
+}
+
+@page cover {
+	@top-left { content: none; }
+	@top-center { content: none; }
+	@top-right { content: none; }
+	@bottom-left { content: none; }
+	@bottom-center { content: none; }
+	@bottom-right { content: none; }
+}
+
 .underrock-toc {
 	break-after: page;
 }
