@@ -1,6 +1,6 @@
 import { Platform } from "obsidian";
 import type { DocumentBuilder } from "../../export/DocumentBuilder";
-import { setPdfMetadata } from "../../pdf/setPdfMetadata";
+import { finishPdf } from "../../pdf/finishPdf";
 import type { RenderSource } from "../../render/RenderSource";
 import type { PdfEngine } from "../PdfEngine";
 import { printHtmlToPdf } from "./printHtmlToPdf";
@@ -17,8 +17,9 @@ export class HtmlPdfEngine implements PdfEngine {
 
 	async render(source: RenderSource): Promise<Uint8Array> {
 		const html = await this.builder.build(source);
-		const pdf = await printHtmlToPdf(html);
-		const language = source.lang ?? this.builder.settingsFor(source).language;
-		return setPdfMetadata(pdf, { title: source.title, author: source.author, language });
+		const { pdf, headings } = await printHtmlToPdf(html);
+		const settings = this.builder.settingsFor(source);
+		const language = source.lang ?? settings.language;
+		return finishPdf(pdf, { title: source.title, author: source.author, language }, settings.bookmarks ? headings : []);
 	}
 }
