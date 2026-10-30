@@ -5,6 +5,7 @@
  * This hook moves the break earlier so that at least MIN_LINES lines of a paragraph or list
  * item stay on each side of a page break. A block too short to split moves whole, together with
  * the headings right before it, so it doesn't leave them alone at the bottom of the page.
+ * A callout never breaks right after its title: it moves whole instead.
  */
 (function () {
 	var MIN_LINES = 2;
@@ -64,6 +65,29 @@
 		return first;
 	}
 
+	function calloutOfTitleBreak(overflow, block) {
+		var container = overflow.startContainer;
+		if (container.nodeType === 1 && container.classList.contains("callout")) {
+			var before = Array.prototype.slice.call(container.childNodes, 0, overflow.startOffset).filter(function (node) {
+				return node.nodeType === 1 || node.data.trim() !== "";
+			});
+			return before.length === 1 && before[0].nodeType === 1 && before[0].classList.contains("callout-title") ? container : null;
+		}
+		var content = block && block.parentElement;
+		if (!block || block.previousElementSibling || !content || !content.classList.contains("callout-content")) return null;
+		var callout = content.parentElement;
+		return callout && callout.classList.contains("callout") ? callout : null;
+	}
+
+	function moveBefore(element, overflow, rendered) {
+		var first = withLeadingHeadings(element);
+		if (!hasContentBefore(first, rendered)) return undefined;
+		var moved = document.createRange();
+		moved.setStartBefore(first);
+		moved.setEnd(overflow.endContainer, overflow.endOffset);
+		return moved;
+	}
+
 	function hasContentBefore(block, rendered) {
 		var range = document.createRange();
 		range.setStart(rendered, 0);
@@ -72,7 +96,10 @@
 	}
 
 	window.PagedPolyfill.chunker.hooks.onOverflow.register(function (overflow, rendered) {
-		if (!overflow || overflow.startContainer.nodeType !== Node.TEXT_NODE) return undefined;
+		if (!overflow) return undefined;
+		var titleCallout = calloutOfTitleBreak(overflow, null);
+		if (titleCallout) return moveBefore(titleCallout, overflow, rendered);
+		if (overflow.startContainer.nodeType !== Node.TEXT_NODE) return undefined;
 		var block = closestBlock(overflow.startContainer, rendered);
 		if (!block) return undefined;
 
@@ -86,7 +113,10 @@
 		var linesBefore = breakLine;
 		var midWord = breakChar !== starts[breakLine];
 		var linesAfter = starts.length - breakLine - (midWord ? 1 : 0);
-		if (linesBefore === 0) return undefined;
+		if (linesBefore === 0) {
+			var callout = calloutOfTitleBreak(overflow, block);
+			return callout ? moveBefore(callout, overflow, rendered) : undefined;
+		}
 		var newLine = linesAfter < MIN_LINES ? breakLine - (MIN_LINES - linesAfter) : breakLine;
 		if (newLine === breakLine && linesBefore >= MIN_LINES) return undefined;
 
