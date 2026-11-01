@@ -2,6 +2,7 @@ import { PluginSettingTab } from "obsidian";
 import type { App, SettingDefinitionItem } from "obsidian";
 import type { PageSize } from "../pagination/PageSize";
 import type { HorizontalPosition, MarginSlot } from "../running/MarginSlot";
+import type { TextAlign } from "../typography/Typography";
 import type { SettingsHost } from "./SettingsHost";
 import { getSettingPath, setSettingPath } from "./settingPath";
 
@@ -22,6 +23,8 @@ const MARGIN_SLOT_NAMES: Record<MarginSlot, string> = {
 };
 
 const POSITION_NAMES: Record<HorizontalPosition, string> = { left: "Left", center: "Centre", right: "Right" };
+
+const TEXT_ALIGN_NAMES: Record<TextAlign, string> = { left: "Left", center: "Centre", right: "Right", justify: "Justified" };
 
 const HEADING_SIZES: [string, string][] = [1, 2, 3, 4, 5, 6].map((level) => [`typography.h${level}Size`, `Heading ${level} size`]);
 
@@ -92,6 +95,11 @@ export class UnderrockSettingTab extends PluginSettingTab {
 						name: "Line height",
 						desc: "Multiple of the font size.",
 						control: { type: "number", key: "typography.lineHeight", min: 1, max: 3, step: 0.05 },
+					},
+					{
+						name: "Text alignment",
+						desc: "Justified text is hyphenated using the document language.",
+						control: { type: "dropdown", key: "typography.textAlign", options: TEXT_ALIGN_NAMES },
 					},
 					{ name: "Text colour", control: { type: "color", key: "typography.textColor" } },
 					{ name: "Heading colour", control: { type: "color", key: "typography.headingColor" } },
