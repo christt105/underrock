@@ -17,6 +17,12 @@ describe("typographyCss", () => {
 		expect(css).not.toContain("--ur-color-text");
 	});
 
+	it("writes the text alignment and skips unknown values", () => {
+		expect(typographyCss({ ...DEFAULT_TYPOGRAPHY, textAlign: "justify" })).toContain("--ur-text-align: justify;");
+		const css = typographyCss({ ...DEFAULT_TYPOGRAPHY, textAlign: "center; color: red" as "left" });
+		expect(css).not.toContain("--ur-text-align");
+	});
+
 	it("sets fonts when given", () => {
 		expect(typographyCss({ ...DEFAULT_TYPOGRAPHY, codeFont: "Fira Code" })).toContain('--ur-font-code: "Fira Code";');
 	});

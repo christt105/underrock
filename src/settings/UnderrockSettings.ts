@@ -3,7 +3,7 @@ import type { PageSetup } from "../pagination/PageSetup";
 import type { LinkMode } from "../render/LinkMode";
 import { DEFAULT_HEADER_FOOTER, HORIZONTAL_POSITIONS, MARGIN_SLOTS } from "../running/HeaderFooter";
 import type { HeaderFooter } from "../running/HeaderFooter";
-import { DEFAULT_TYPOGRAPHY } from "../typography/Typography";
+import { DEFAULT_TYPOGRAPHY, TEXT_ALIGNS } from "../typography/Typography";
 import type { Typography } from "../typography/Typography";
 import type { AllowedValues } from "./applyOverrides";
 
@@ -27,6 +27,7 @@ export const DEFAULT_SETTINGS: UnderrockSettings = {
 export const ALLOWED_VALUES: AllowedValues = {
 	"page.size": ["A4", "A5", "Letter", "Legal"],
 	links: ["text", "obsidian-uri"],
+	"typography.textAlign": TEXT_ALIGNS,
 	"headerFooter.pageNumberPosition": MARGIN_SLOTS,
 	"headerFooter.headerPosition": HORIZONTAL_POSITIONS,
 	"headerFooter.footerPosition": HORIZONTAL_POSITIONS,

@@ -11,6 +11,7 @@
 	--ur-size-h6: 11pt;
 	--ur-size-code: 0.88em;
 	--ur-line-height: 1.5;
+	--ur-text-align: left;
 	--ur-color-text: #1a1a1a;
 	--ur-color-heading: var(--ur-color-text);
 	--ur-color-muted: #5c5c5c;
@@ -34,6 +35,11 @@ body {
 	margin: 0;
 	hyphens: auto;
 	overflow-wrap: break-word;
+}
+
+p,
+li {
+	text-align: var(--ur-text-align);
 }
 
 p,
