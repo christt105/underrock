@@ -1,5 +1,6 @@
 import type { CleanOptions } from "./CleanOptions";
 import { markLayoutHints } from "../pagination/markLayoutHints";
+import { wrapFigures } from "./figures";
 import { assignHeadingIds } from "./headingIds";
 
 const APP_CHROME = [
@@ -20,6 +21,7 @@ const APP_CHROME = [
 export function cleanRenderedHtml(root: HTMLElement, options: CleanOptions): void {
 	root.querySelectorAll(APP_CHROME).forEach((el) => el.remove());
 	unwrapBlockWrappers(root);
+	wrapFigures(root);
 	const headingIds = assignHeadingIds(root);
 	rewriteInternalLinks(root, headingIds, options);
 	root.querySelectorAll("a.tag").forEach(unwrap);

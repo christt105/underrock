@@ -141,6 +141,33 @@ video {
 	text-align: center;
 }
 
+.underrock-figure {
+	margin-left: 0;
+	margin-right: 0;
+	text-align: center;
+}
+
+.underrock-figure figcaption {
+	margin-top: 0.4em;
+	font-size: 0.9em;
+	line-height: 1.3;
+	color: var(--ur-color-muted);
+	text-align: center;
+}
+
+.underrock-figure-row {
+	display: flex;
+	align-items: flex-start;
+	gap: 1em;
+	margin-bottom: var(--ur-paragraph-spacing);
+}
+
+.underrock-figure-row > .underrock-figure {
+	flex: 1 1 0;
+	min-width: 0;
+	margin: 0;
+}
+
 code {
 	font-family: var(--ur-font-code);
 	font-size: var(--ur-size-code);
