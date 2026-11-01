@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { DEFAULT_TYPOGRAPHY } from "./Typography";
+import { DEFAULT_TYPOGRAPHY, TEXT_ALIGNS } from "./Typography";
 import { fontFamily, typographyCss } from "./typographyCss";
 
 describe("typographyCss", () => {
@@ -18,7 +18,9 @@ describe("typographyCss", () => {
 	});
 
 	it("writes the text alignment and skips unknown values", () => {
-		expect(typographyCss({ ...DEFAULT_TYPOGRAPHY, textAlign: "justify" })).toContain("--ur-text-align: justify;");
+		for (const textAlign of TEXT_ALIGNS) {
+			expect(typographyCss({ ...DEFAULT_TYPOGRAPHY, textAlign })).toContain(`--ur-text-align: ${textAlign};`);
+		}
 		const css = typographyCss({ ...DEFAULT_TYPOGRAPHY, textAlign: "center; color: red" as "left" });
 		expect(css).not.toContain("--ur-text-align");
 	});

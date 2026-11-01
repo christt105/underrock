@@ -24,7 +24,7 @@ const MARGIN_SLOT_NAMES: Record<MarginSlot, string> = {
 
 const POSITION_NAMES: Record<HorizontalPosition, string> = { left: "Left", center: "Centre", right: "Right" };
 
-const TEXT_ALIGN_NAMES: Record<TextAlign, string> = { left: "Left", justify: "Justified" };
+const TEXT_ALIGN_NAMES: Record<TextAlign, string> = { left: "Left", center: "Centre", right: "Right", justify: "Justified" };
 
 const HEADING_SIZES: [string, string][] = [1, 2, 3, 4, 5, 6].map((level) => [`typography.h${level}Size`, `Heading ${level} size`]);
 
