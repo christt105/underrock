@@ -1,7 +1,7 @@
 import type { CleanOptions } from "./CleanOptions";
 import { markLayoutHints } from "../pagination/markLayoutHints";
+import type { FigureEntry } from "./FigureEntry";
 import { wrapFigures } from "./figures";
-import type { FigureRef } from "./figures";
 import { assignHeadingIds } from "./headingIds";
 
 const APP_CHROME = [
@@ -18,15 +18,20 @@ const APP_CHROME = [
 	".embedded-backlinks",
 ].join(", ");
 
-/** Strips Obsidian UI from rendered Markdown and rewrites links so the HTML stands on its own. */
-export function cleanRenderedHtml(root: HTMLElement, options: CleanOptions): void {
+/**
+ * Strips Obsidian UI from rendered Markdown and rewrites links so the HTML stands on its own.
+ * Returns the figures it numbered.
+ */
+export function cleanRenderedHtml(root: HTMLElement, options: CleanOptions): FigureEntry[] {
 	root.querySelectorAll(APP_CHROME).forEach((el) => el.remove());
 	unwrapBlockWrappers(root);
 	const figures = wrapFigures(root, options.lang);
 	const headingIds = assignHeadingIds(root);
-	rewriteInternalLinks(root, headingIds, figures, options);
+	const figuresByBlockId = new Map(figures.filter((figure) => figure.blockId !== "").map((figure) => [figure.blockId, figure]));
+	rewriteInternalLinks(root, headingIds, figuresByBlockId, options);
 	root.querySelectorAll("a.tag").forEach(unwrap);
 	markLayoutHints(root);
+	return figures;
 }
 
 function unwrapBlockWrappers(root: HTMLElement): void {
@@ -41,7 +46,7 @@ function unwrapBlockWrappers(root: HTMLElement): void {
 function rewriteInternalLinks(
 	root: HTMLElement,
 	headingIds: Map<string, string>,
-	figures: Map<string, FigureRef>,
+	figures: Map<string, FigureEntry>,
 	options: CleanOptions,
 ): void {
 	for (const link of Array.from(root.querySelectorAll<HTMLAnchorElement>("a.internal-link"))) {

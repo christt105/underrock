@@ -17,7 +17,7 @@ afterAll(() => rmSync(dir, { recursive: true, force: true }));
 describe("printing a paged document", () => {
 	it("writes the document into a page, waits for pagination and prints a PDF with embedded fonts, metadata and links", async () => {
 		const html = buildPagedDocument(
-			{ title: "Sample", html: OBSIDIAN_FIXTURE, mathCss: "" },
+			{ title: "Sample", html: OBSIDIAN_FIXTURE, mathCss: "", figures: [] },
 			{ page: DEFAULT_PAGE_SETUP, lang: "en", baseUrl: "about:blank", extraCss: [] },
 		);
 		const file = join(dir, "host.html");

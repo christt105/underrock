@@ -111,20 +111,22 @@ describe("wrapFigures", () => {
 		expect(root.querySelector("figure")).toBeNull();
 	});
 
-	it("gives figures with a block id an id and returns their number by block id", () => {
+	it("gives every figure an id, from its block id if it has one, and returns them in order", () => {
 		const root = document.createElement("div");
 		root.innerHTML =
 			`<p>${embed("a.png", "First")}</p>` +
-			`<p>${embed("b.png")}<br>${embed("c.png")}<br>Electronic adapter circuit ${marker("circuit")}</p>` +
-			`<p>${embed("d.png")}<br>${marker("lone")}</p>`;
-		const refs = wrapFigures(root, "es");
-		expect(refs).toEqual(
-			new Map([
-				["circuit", { id: "figure-circuit", label: "Figura 2" }],
-				["lone", { id: "figure-lone", label: "Figura 3" }],
-			]),
+			`<p>${embed("b.png", "Tx")}<br>${embed("c.png")}<br>Electronic adapter <em>circuit</em> ${marker("circuit")}</p>` +
+			`<p>${embed("d.png")}<br>${marker("lone")}</p>` +
+			`<p>${embed("e.png")}<br>${marker("lone")}</p>`;
+		expect(wrapFigures(root, "es")).toEqual([
+			{ id: "underrock-figure-1", label: "Figura 1", caption: "First", blockId: "" },
+			{ id: "figure-circuit", label: "Figura 2", caption: "Electronic adapter circuit (a) Tx", blockId: "circuit" },
+			{ id: "figure-lone", label: "Figura 3", caption: "", blockId: "lone" },
+			{ id: "underrock-figure-4", label: "Figura 4", caption: "", blockId: "" },
+		]);
+		expect(root.querySelector("#figure-circuit > figcaption")?.textContent?.replace(/\s+/g, " ").trim()).toBe(
+			"Figura 2: Electronic adapter circuit (a) Tx",
 		);
-		expect(root.querySelector("#figure-circuit > figcaption")?.textContent?.trim()).toBe("Figura 2: Electronic adapter circuit");
 		expect(root.querySelector("#figure-lone > figcaption")?.textContent).toBe("Figura 3");
 	});
 });

@@ -146,6 +146,18 @@ export class UnderrockSettingTab extends PluginSettingTab {
 			},
 			{
 				type: "group",
+				heading: "Figures",
+				items: [
+					{
+						name: "List of figures",
+						desc: "Adds a page before the note that lists its figures with their captions and page numbers.",
+						control: { type: "toggle", key: "figureList.enabled" },
+					},
+					{ name: "List of figures title", control: { type: "text", key: "figureList.title", placeholder: "List of figures" } },
+				],
+			},
+			{
+				type: "group",
 				heading: "Content",
 				items: [
 					{

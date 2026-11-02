@@ -1,5 +1,6 @@
 import { TFile } from "obsidian";
 import type { App } from "obsidian";
+import { figureListHtml } from "../figures/figureListHtml";
 import { buildPagedDocument } from "../pagination/buildPagedDocument";
 import { renderNote } from "../render/renderNote";
 import { marginBoxesCss } from "../running/marginBoxesCss";
@@ -31,6 +32,7 @@ export class DocumentBuilder {
 			page: settings.page,
 			lang,
 			baseUrl: activeDocument.baseURI,
+			leadingHtml: settings.figureList.enabled ? [figureListHtml(note.figures, settings.figureList)] : [],
 			extraCss: [
 				fontFaceCss(this.fontFiles(settings.typography.fontsFolder)),
 				typographyCss(settings.typography),

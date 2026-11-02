@@ -22,8 +22,8 @@ export async function renderNote(app: App, source: RenderSource, options: CleanO
 			await finishRenderMath();
 		}
 		await waitForSettled(content, { quietMs: 250, timeoutMs: 10000 });
-		cleanRenderedHtml(content, options);
-		return { title: source.title, html: content.innerHTML, mathCss: collectMathCss(activeDocument) };
+		const figures = cleanRenderedHtml(content, options);
+		return { title: source.title, html: content.innerHTML, mathCss: collectMathCss(activeDocument), figures };
 	} finally {
 		component.unload();
 		host.remove();

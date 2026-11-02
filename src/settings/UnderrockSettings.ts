@@ -1,3 +1,5 @@
+import { DEFAULT_FIGURE_LIST } from "../figures/FigureListSettings";
+import type { FigureListSettings } from "../figures/FigureListSettings";
 import { DEFAULT_PAGE_SETUP } from "../pagination/PageSetup";
 import type { PageSetup } from "../pagination/PageSetup";
 import type { LinkMode } from "../render/LinkMode";
@@ -11,6 +13,7 @@ export interface UnderrockSettings {
 	page: PageSetup;
 	typography: Typography;
 	headerFooter: HeaderFooter;
+	figureList: FigureListSettings;
 	links: LinkMode;
 	/** Default document language (BCP 47), used for hyphenation. A note's `lang` frontmatter overrides it. */
 	language: string;
@@ -20,6 +23,7 @@ export const DEFAULT_SETTINGS: UnderrockSettings = {
 	page: DEFAULT_PAGE_SETUP,
 	typography: DEFAULT_TYPOGRAPHY,
 	headerFooter: DEFAULT_HEADER_FOOTER,
+	figureList: DEFAULT_FIGURE_LIST,
 	links: "text",
 	language: "en",
 };

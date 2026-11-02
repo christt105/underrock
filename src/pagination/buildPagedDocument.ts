@@ -13,7 +13,7 @@ export function buildPagedDocument(note: RenderedNote, options: PagedDocumentOpt
 		title: note.title,
 		lang: options.lang,
 		baseUrl: options.baseUrl,
-		bodyHtml: note.html,
+		bodyHtml: [...(options.leadingHtml ?? []), note.html].join(""),
 		stylesheets: [DOCUMENT_CSS, PAGINATION_CSS, note.mathCss, pageCss(options.page), ...options.extraCss].map((css) =>
 			absoluteCssUrls(css, options.baseUrl),
 		),

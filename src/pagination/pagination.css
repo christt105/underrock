@@ -30,6 +30,21 @@ pre.underrock-short {
 	break-inside: avoid;
 }
 
+.underrock-figure-list {
+	break-after: page;
+}
+
+.underrock-figure-list-entry {
+	break-inside: avoid;
+}
+
+.underrock-figure-list-entry a::after {
+	content: target-counter(attr(href), page);
+	margin-left: auto;
+	padding-left: 1em;
+	font-variant-numeric: tabular-nums;
+}
+
 .page-break,
 .underrock-page-break {
 	break-after: page;

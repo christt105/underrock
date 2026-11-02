@@ -1,3 +1,4 @@
+import type { FigureEntry } from "./FigureEntry";
 import { BLOCK_ID_ATTRIBUTE } from "./blockIds";
 
 /** Width-only alt text, as in `![[photo.png|300]]` or `![[photo.png|300x200]]`. */
@@ -16,12 +17,6 @@ const FIGURE_WORDS: Record<string, string> = {
 
 type Line = Node[];
 
-/** Where a link to a figure's block id points, and the text it shows. */
-export interface FigureRef {
-	readonly id: string;
-	readonly label: string;
-}
-
 /**
  * Turns paragraphs that hold images into numbered figures. Images on consecutive lines share a
  * paragraph, so they become one figure with its images side by side, labelled (a), (b)… The caption,
@@ -29,11 +24,12 @@ export interface FigureRef {
  * after its letter; a single image without that line is captioned with its alt text. Text right
  * above the images stays a paragraph of its own.
  *
- * Returns the figures that have a block id, like `^chart`, by that id.
+ * Every figure gets an id, from its block id, like `^chart`, when it has one.
  */
-export function wrapFigures(root: HTMLElement, lang: string): Map<string, FigureRef> {
+export function wrapFigures(root: HTMLElement, lang: string): FigureEntry[] {
 	const word = figureWord(lang);
-	const refs = new Map<string, FigureRef>();
+	const entries: FigureEntry[] = [];
+	const blockIds = new Set<string>();
 	let number = 0;
 	for (const paragraph of Array.from(root.querySelectorAll("p"))) {
 		const parts = splitParagraph(paragraph);
@@ -68,10 +64,15 @@ export function wrapFigures(root: HTMLElement, lang: string): Map<string, Figure
 			figcaption.append(createSpan({ cls: "underrock-figure-label", text: `${word} ${number}` }));
 		}
 		figure.append(figcaption);
-		if (blockId !== "" && !refs.has(blockId)) {
-			figure.id = `figure-${blockId}`;
-			refs.set(blockId, { id: figure.id, label: `${word} ${number}` });
-		}
+		const named = blockId !== "" && !blockIds.has(blockId);
+		if (named) blockIds.add(blockId);
+		figure.id = named ? `figure-${blockId}` : `underrock-figure-${number}`;
+		entries.push({
+			id: figure.id,
+			label: `${word} ${number}`,
+			caption: caption.map((node) => node.textContent ?? "").join("").replace(/\s+/g, " ").trim(),
+			blockId: named ? blockId : "",
+		});
 		if (before.length > 0) {
 			paragraph.replaceChildren(...joinLines(before, () => createEl("br")));
 			paragraph.after(figure);
@@ -79,7 +80,7 @@ export function wrapFigures(root: HTMLElement, lang: string): Map<string, Figure
 			paragraph.replaceWith(figure);
 		}
 	}
-	return refs;
+	return entries;
 }
 
 function figureWord(lang: string): string {
