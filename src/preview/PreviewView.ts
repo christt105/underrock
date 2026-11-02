@@ -2,6 +2,7 @@ import { ItemView, MarkdownView, debounce, setIcon } from "obsidian";
 import type { TFile, WorkspaceLeaf } from "obsidian";
 import { sourceFromFile } from "../render/sourceFromFile";
 import type { PreviewHost } from "./PreviewHost";
+import { keepLinksInDocument } from "./inDocumentLinks";
 import { waitForPagination } from "./waitForPagination";
 import { ZOOM_STEP, clampZoom, fitWidthZoom } from "./zoom";
 
@@ -153,6 +154,7 @@ export class PreviewView extends ItemView {
 		previous?.remove();
 		this.status.hide();
 		frame.contentWindow?.addEventListener("scroll", () => this.updatePageLabel(), { passive: true });
+		keepLinksInDocument(doc);
 		this.updatePageLabel();
 	}
 
