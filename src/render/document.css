@@ -170,6 +170,10 @@ video {
 	margin-top: 0.3em;
 }
 
+.underrock-figure-label {
+	font-weight: 700;
+}
+
 code {
 	font-family: var(--ur-font-code);
 	font-size: var(--ur-size-code);

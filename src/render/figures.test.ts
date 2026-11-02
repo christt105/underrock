@@ -42,12 +42,26 @@ describe("wrapFigures", () => {
 		expect(captions(wrap('<p><img alt="A running dog" src="dog.jpg"></p>'))).toEqual(["Figure 1: A running dog"]);
 	});
 
-	it("puts images on consecutive lines side by side, labelled (a), (b)… with their alt text", () => {
-		const root = wrap(`<p>${embed("tx.png", "Tx Schematic")}<br>\n${embed("rx.png")}</p>`);
+	it("puts images on consecutive lines side by side, labelled (a), (b)…", () => {
+		const root = wrap(`<p>${embed("tx.png")}<br>\n${embed("rx.png")}</p>`);
 		const row = root.querySelector(".underrock-figure > .underrock-figure-row");
 		expect(Array.from(row?.children ?? []).map((c) => c.className)).toEqual(["underrock-subfigure", "underrock-subfigure"]);
-		expect(captions(root, ".underrock-subfigure > figcaption")).toEqual(["(a) Tx Schematic", "(b)"]);
+		expect(captions(root, ".underrock-subfigure > figcaption")).toEqual(["(a)", "(b)"]);
 		expect(captions(root)).toEqual(["Figure 1"]);
+	});
+
+	it("follows the line below with each image's alt text after its letter", () => {
+		const root = wrap(
+			`<p>${embed("tx.png", "Tx Schematic: Comparator")}<br>\n${embed("rx.png", "Rx Schematic: Totem pole.")}<br>\nElectronic adapter circuit</p>`,
+		);
+		expect(captions(root, ".underrock-subfigure > figcaption")).toEqual(["(a)", "(b)"]);
+		expect(captions(root)).toEqual(["Figure 1: Electronic adapter circuit (a) Tx Schematic: Comparator (b) Rx Schematic: Totem pole."]);
+		expect(root.querySelector(".underrock-figure > figcaption .underrock-figure-label")?.textContent).toBe("Figure 1:");
+	});
+
+	it("leaves out the letters of images without alt text, and works without the line below", () => {
+		const root = wrap(`<p>${embed("a.png")}<br>${embed("b.png", "Second")}</p>`);
+		expect(captions(root)).toEqual(["Figure 1: (b) Second"]);
 	});
 
 	it("uses the line right below the images as the numbered caption, keeping its formatting", () => {
@@ -80,13 +94,12 @@ describe("wrapFigures", () => {
 			`<p>${embed("a.png", "One")}</p><p>${embed("b.png", " Bloch sphere")}<br>\n${embed("c.png", "234")}</p><p>${embed("d.png")}</p>`,
 			"es-ES",
 		);
-		expect(captions(root)).toEqual(["Figura 1: One", "Figura 2", "Figura 3"]);
-		expect(captions(root, ".underrock-subfigure > figcaption")).toEqual(["(a) Bloch sphere", "(b)"]);
+		expect(captions(root)).toEqual(["Figura 1: One", "Figura 2: (a) Bloch sphere", "Figura 3"]);
 	});
 
 	it("ignores alt text that is the file name or only a size", () => {
 		const root = wrap(`<p>${embed("photos/cat.png", "cat.png")}<br>${embed("dog.png", "300")}<br>${embed("fish.png", "300x200")}</p>`);
-		expect(captions(root, ".underrock-subfigure > figcaption")).toEqual(["(a)", "(b)", "(c)"]);
+		expect(captions(root)).toEqual(["Figure 1"]);
 	});
 
 	it("numbers a single image without caption too", () => {

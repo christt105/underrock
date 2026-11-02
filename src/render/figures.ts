@@ -16,10 +16,10 @@ type Line = Node[];
 
 /**
  * Turns paragraphs that hold images into numbered figures. Images on consecutive lines share a
- * paragraph, so they become one figure with its images side by side, labelled (a), (b)… with their
- * alt text. A line of text right below the images is the figure's caption, as in "Figure 3: …"; a
- * single image without one is captioned with its alt text. Text right above the images stays a
- * paragraph of its own.
+ * paragraph, so they become one figure with its images side by side, labelled (a), (b)… The caption,
+ * as in "Figure 3: …", is the line of text right below the images followed by each image's alt text
+ * after its letter; a single image without that line is captioned with its alt text. Text right
+ * above the images stays a paragraph of its own.
  */
 export function wrapFigures(root: HTMLElement, lang: string): void {
 	const word = figureWord(lang);
@@ -28,11 +28,18 @@ export function wrapFigures(root: HTMLElement, lang: string): void {
 		const parts = splitParagraph(paragraph);
 		if (parts === null) continue;
 		const { before, images, after } = parts;
-		let caption: Node[] = after.length > 0 ? joinLines(after, () => paragraph.ownerDocument.createTextNode(" ")) : [];
-		if (images.length === 1 && caption.length === 0) {
+		const space = () => paragraph.ownerDocument.createTextNode(" ");
+		const pieces: Node[][] = after.length > 0 ? [joinLines(after, space)] : [];
+		if (images.length === 1) {
 			const alt = altCaption(images[0]);
-			if (alt !== "") caption = [paragraph.ownerDocument.createTextNode(alt)];
+			if (pieces.length === 0 && alt !== "") pieces.push([paragraph.ownerDocument.createTextNode(alt)]);
+		} else {
+			images.forEach((image, i) => {
+				const alt = altCaption(image);
+				if (alt !== "") pieces.push([paragraph.ownerDocument.createTextNode(`${letter(i)} ${alt}`)]);
+			});
 		}
+		const caption = joinLines(pieces, space);
 		number += 1;
 		const figure = createEl("figure", { cls: "underrock-figure" });
 		if (images.length === 1) {
@@ -113,11 +120,13 @@ function isImage(node: Node): node is Element {
 
 function subfigure(image: Element, index: number): HTMLElement {
 	const el = createEl("figure", { cls: "underrock-subfigure" });
-	el.append(image);
-	const alt = altCaption(image);
-	const letter = `(${String.fromCharCode(97 + (index % 26))})`;
-	el.append(createEl("figcaption", { text: alt === "" ? letter : `${letter} ${alt}` }));
+	el.append(image, createEl("figcaption", { text: letter(index) }));
 	return el;
+}
+
+/** The label of the subfigure at `index`: (a), (b)… */
+function letter(index: number): string {
+	return `(${String.fromCharCode(97 + (index % 26))})`;
 }
 
 /** The alt text, unless Obsidian filled it in with the file name or it only sets the size. */
