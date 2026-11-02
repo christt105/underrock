@@ -3,6 +3,7 @@ import type { App } from "obsidian";
 import type { CleanOptions } from "./CleanOptions";
 import type { RenderSource } from "./RenderSource";
 import type { RenderedNote } from "./RenderedNote";
+import { markBlockIds } from "./blockIds";
 import { cleanRenderedHtml } from "./cleanRenderedHtml";
 import { collectMathCss } from "./collectMathCss";
 import { waitForSettled } from "./waitForSettled";
@@ -15,7 +16,7 @@ export async function renderNote(app: App, source: RenderSource, options: CleanO
 	const content = host.createDiv({ cls: "markdown-preview-view markdown-rendered" });
 	try {
 		const { contentStart } = getFrontMatterInfo(source.markdown);
-		await MarkdownRenderer.render(app, source.markdown.slice(contentStart), content, source.path, component);
+		await MarkdownRenderer.render(app, markBlockIds(source.markdown.slice(contentStart)), content, source.path, component);
 		if (content.querySelector(".math")) {
 			await loadMathJax();
 			await finishRenderMath();

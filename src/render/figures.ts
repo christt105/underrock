@@ -1,3 +1,5 @@
+import { BLOCK_ID_ATTRIBUTE } from "./blockIds";
+
 /** Width-only alt text, as in `![[photo.png|300]]` or `![[photo.png|300x200]]`. */
 const SIZE_ONLY = /^\d+(?:x\d+)?$/;
 
@@ -14,20 +16,30 @@ const FIGURE_WORDS: Record<string, string> = {
 
 type Line = Node[];
 
+/** Where a link to a figure's block id points, and the text it shows. */
+export interface FigureRef {
+	readonly id: string;
+	readonly label: string;
+}
+
 /**
  * Turns paragraphs that hold images into numbered figures. Images on consecutive lines share a
  * paragraph, so they become one figure with its images side by side, labelled (a), (b)… The caption,
  * as in "Figure 3: …", is the line of text right below the images followed by each image's alt text
  * after its letter; a single image without that line is captioned with its alt text. Text right
  * above the images stays a paragraph of its own.
+ *
+ * Returns the figures that have a block id, like `^chart`, by that id.
  */
-export function wrapFigures(root: HTMLElement, lang: string): void {
+export function wrapFigures(root: HTMLElement, lang: string): Map<string, FigureRef> {
 	const word = figureWord(lang);
+	const refs = new Map<string, FigureRef>();
 	let number = 0;
 	for (const paragraph of Array.from(root.querySelectorAll("p"))) {
 		const parts = splitParagraph(paragraph);
 		if (parts === null) continue;
 		const { before, images, after } = parts;
+		const blockId = paragraph.querySelector(`[${BLOCK_ID_ATTRIBUTE}]`)?.getAttribute(BLOCK_ID_ATTRIBUTE) ?? "";
 		const space = () => paragraph.ownerDocument.createTextNode(" ");
 		const pieces: Node[][] = after.length > 0 ? [joinLines(after, space)] : [];
 		if (images.length === 1) {
@@ -56,6 +68,10 @@ export function wrapFigures(root: HTMLElement, lang: string): void {
 			figcaption.append(createSpan({ cls: "underrock-figure-label", text: `${word} ${number}` }));
 		}
 		figure.append(figcaption);
+		if (blockId !== "" && !refs.has(blockId)) {
+			figure.id = `figure-${blockId}`;
+			refs.set(blockId, { id: figure.id, label: `${word} ${number}` });
+		}
 		if (before.length > 0) {
 			paragraph.replaceChildren(...joinLines(before, () => createEl("br")));
 			paragraph.after(figure);
@@ -63,6 +79,7 @@ export function wrapFigures(root: HTMLElement, lang: string): void {
 			paragraph.replaceWith(figure);
 		}
 	}
+	return refs;
 }
 
 function figureWord(lang: string): string {
@@ -108,7 +125,9 @@ function joinLines(lines: Line[], separator: () => Node): Node[] {
 	return lines.flatMap((line, i) => (i === 0 ? line : [separator(), ...line]));
 }
 
+/** Whitespace, or the marker of a block id, which has no content. */
 function isBlank(node: Node): boolean {
+	if (node.nodeType === node.ELEMENT_NODE) return (node as Element).hasAttribute(BLOCK_ID_ATTRIBUTE);
 	return node.nodeType === node.TEXT_NODE && (node.textContent ?? "").trim() === "";
 }
 

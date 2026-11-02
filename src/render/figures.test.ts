@@ -1,19 +1,12 @@
 // @vitest-environment happy-dom
-import { beforeAll, describe, expect, it, vi } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
+import { stubObsidianDom } from "../testing/obsidianDom";
+import { BLOCK_ID_ATTRIBUTE } from "./blockIds";
 import { wrapFigures } from "./figures";
 
-/** Stand-ins for the DOM helpers Obsidian adds to the window. */
-beforeAll(() => {
-	const createEl = (tag: string, o: { cls?: string; text?: string } = {}) => {
-		const el = document.createElement(tag);
-		if (o.cls !== undefined) el.className = o.cls;
-		if (o.text !== undefined) el.textContent = o.text;
-		return el;
-	};
-	vi.stubGlobal("createEl", createEl);
-	vi.stubGlobal("createDiv", (o?: { cls?: string }) => createEl("div", o));
-	vi.stubGlobal("createSpan", (o?: { cls?: string; text?: string }) => createEl("span", o));
-});
+beforeAll(stubObsidianDom);
+
+const marker = (id: string) => `<span ${BLOCK_ID_ATTRIBUTE}="${id}"></span>`;
 
 function embed(file: string, alt = file): string {
 	return `<span class="internal-embed media-embed image-embed is-loaded" src="${file}" alt="${alt}"><img alt="${alt}" src="app://vault/${file}"></span>`;
@@ -116,5 +109,22 @@ describe("wrapFigures", () => {
 	it("leaves embeds that are not loaded images alone", () => {
 		const root = wrap('<p><span class="internal-embed image-embed is-unresolved" src="missing.png" alt="Missing"></span></p>');
 		expect(root.querySelector("figure")).toBeNull();
+	});
+
+	it("gives figures with a block id an id and returns their number by block id", () => {
+		const root = document.createElement("div");
+		root.innerHTML =
+			`<p>${embed("a.png", "First")}</p>` +
+			`<p>${embed("b.png")}<br>${embed("c.png")}<br>Electronic adapter circuit ${marker("circuit")}</p>` +
+			`<p>${embed("d.png")}<br>${marker("lone")}</p>`;
+		const refs = wrapFigures(root, "es");
+		expect(refs).toEqual(
+			new Map([
+				["circuit", { id: "figure-circuit", label: "Figura 2" }],
+				["lone", { id: "figure-lone", label: "Figura 3" }],
+			]),
+		);
+		expect(root.querySelector("#figure-circuit > figcaption")?.textContent?.trim()).toBe("Figura 2: Electronic adapter circuit");
+		expect(root.querySelector("#figure-lone > figcaption")?.textContent).toBe("Figura 3");
 	});
 });
