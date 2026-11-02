@@ -15,9 +15,9 @@ const FIGURE_WORDS: Record<string, string> = {
 type Line = Node[];
 
 /**
- * Turns paragraphs that hold images into figures. Images on consecutive lines share a paragraph,
- * so they become one figure with its images side by side, labelled (a), (b)… with their alt text.
- * A line of text right below the images is the figure's caption, numbered like "Figure 3: …"; a
+ * Turns paragraphs that hold images into numbered figures. Images on consecutive lines share a
+ * paragraph, so they become one figure with its images side by side, labelled (a), (b)… with their
+ * alt text. A line of text right below the images is the figure's caption, as in "Figure 3: …"; a
  * single image without one is captioned with its alt text. Text right above the images stays a
  * paragraph of its own.
  */
@@ -31,9 +31,9 @@ export function wrapFigures(root: HTMLElement, lang: string): void {
 		let caption: Node[] = after.length > 0 ? joinLines(after, () => paragraph.ownerDocument.createTextNode(" ")) : [];
 		if (images.length === 1 && caption.length === 0) {
 			const alt = altCaption(images[0]);
-			if (alt === "") continue;
-			caption = [paragraph.ownerDocument.createTextNode(alt)];
+			if (alt !== "") caption = [paragraph.ownerDocument.createTextNode(alt)];
 		}
+		number += 1;
 		const figure = createEl("figure", { cls: "underrock-figure" });
 		if (images.length === 1) {
 			figure.append(images[0]);
@@ -42,12 +42,13 @@ export function wrapFigures(root: HTMLElement, lang: string): void {
 			row.append(...images.map(subfigure));
 			figure.append(row);
 		}
+		const figcaption = createEl("figcaption");
 		if (caption.length > 0) {
-			number += 1;
-			const figcaption = createEl("figcaption");
 			figcaption.append(createSpan({ cls: "underrock-figure-label", text: `${word} ${number}:` }), " ", ...caption);
-			figure.append(figcaption);
+		} else {
+			figcaption.append(createSpan({ cls: "underrock-figure-label", text: `${word} ${number}` }));
 		}
+		figure.append(figcaption);
 		if (before.length > 0) {
 			paragraph.replaceChildren(...joinLines(before, () => createEl("br")));
 			paragraph.after(figure);

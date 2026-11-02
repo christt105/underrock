@@ -47,7 +47,7 @@ describe("wrapFigures", () => {
 		const row = root.querySelector(".underrock-figure > .underrock-figure-row");
 		expect(Array.from(row?.children ?? []).map((c) => c.className)).toEqual(["underrock-subfigure", "underrock-subfigure"]);
 		expect(captions(root, ".underrock-subfigure > figcaption")).toEqual(["(a) Tx Schematic", "(b)"]);
-		expect(captions(root)).toEqual([]);
+		expect(captions(root)).toEqual(["Figure 1"]);
 	});
 
 	it("uses the line right below the images as the numbered caption, keeping its formatting", () => {
@@ -75,9 +75,13 @@ describe("wrapFigures", () => {
 		expect(captions(root)).toEqual(["Figure 1: Below"]);
 	});
 
-	it("numbers captioned figures in order and names them in the document language", () => {
-		const root = wrap(`<p>${embed("a.png", "One")}</p><p>${embed("b.png")}<br>${embed("c.png")}</p><p>${embed("d.png", "Two")}</p>`, "es-ES");
-		expect(captions(root)).toEqual(["Figura 1: One", "Figura 2: Two"]);
+	it("numbers every figure in order, a row counting as one, in the document language", () => {
+		const root = wrap(
+			`<p>${embed("a.png", "One")}</p><p>${embed("b.png", " Bloch sphere")}<br>\n${embed("c.png", "234")}</p><p>${embed("d.png")}</p>`,
+			"es-ES",
+		);
+		expect(captions(root)).toEqual(["Figura 1: One", "Figura 2", "Figura 3"]);
+		expect(captions(root, ".underrock-subfigure > figcaption")).toEqual(["(a) Bloch sphere", "(b)"]);
 	});
 
 	it("ignores alt text that is the file name or only a size", () => {
@@ -85,10 +89,10 @@ describe("wrapFigures", () => {
 		expect(captions(root, ".underrock-subfigure > figcaption")).toEqual(["(a)", "(b)", "(c)"]);
 	});
 
-	it("leaves a single image without caption alone", () => {
+	it("numbers a single image without caption too", () => {
 		const root = wrap(`<p>Some text<br>${embed("cat.png")}</p>`);
-		expect(root.querySelector("figure")).toBeNull();
-		expect(root.querySelector("p .image-embed")).not.toBeNull();
+		expect(root.querySelector("p")?.textContent).toBe("Some text");
+		expect(captions(root)).toEqual(["Figure 1"]);
 	});
 
 	it("leaves images within text, or with text between them, alone", () => {
