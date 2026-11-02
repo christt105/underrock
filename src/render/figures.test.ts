@@ -119,10 +119,10 @@ describe("wrapFigures", () => {
 			`<p>${embed("d.png")}<br>${marker("lone")}</p>` +
 			`<p>${embed("e.png")}<br>${marker("lone")}</p>`;
 		expect(wrapFigures(root, "es")).toEqual([
-			{ id: "underrock-figure-1", label: "Figura 1", caption: "First", blockId: "" },
-			{ id: "figure-circuit", label: "Figura 2", caption: "Electronic adapter circuit (a) Tx", blockId: "circuit" },
-			{ id: "figure-lone", label: "Figura 3", caption: "", blockId: "lone" },
-			{ id: "underrock-figure-4", label: "Figura 4", caption: "", blockId: "" },
+			{ id: "underrock-figure-1", label: "Figura 1", description: "First", blockId: "" },
+			{ id: "figure-circuit", label: "Figura 2", description: "Electronic adapter circuit", blockId: "circuit" },
+			{ id: "figure-lone", label: "Figura 3", description: "", blockId: "lone" },
+			{ id: "underrock-figure-4", label: "Figura 4", description: "", blockId: "" },
 		]);
 		expect(root.querySelector("#figure-circuit > figcaption")?.textContent?.replace(/\s+/g, " ").trim()).toBe(
 			"Figura 2: Electronic adapter circuit (a) Tx",

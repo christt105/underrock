@@ -48,6 +48,8 @@ export function wrapFigures(root: HTMLElement, lang: string): FigureEntry[] {
 			});
 		}
 		const caption = joinLines(pieces, space);
+		// The list of figures gets the description alone, without each image's (a), (b)… text.
+		const description = after.length > 0 || images.length === 1 ? textOf(pieces[0] ?? []) : "";
 		number += 1;
 		const figure = createEl("figure", { cls: "underrock-figure" });
 		if (images.length === 1) {
@@ -70,7 +72,7 @@ export function wrapFigures(root: HTMLElement, lang: string): FigureEntry[] {
 		entries.push({
 			id: figure.id,
 			label: `${word} ${number}`,
-			caption: caption.map((node) => node.textContent ?? "").join("").replace(/\s+/g, " ").trim(),
+			description,
 			blockId: named ? blockId : "",
 		});
 		if (before.length > 0) {
@@ -81,6 +83,14 @@ export function wrapFigures(root: HTMLElement, lang: string): FigureEntry[] {
 		}
 	}
 	return entries;
+}
+
+function textOf(nodes: Node[]): string {
+	return nodes
+		.map((node) => node.textContent ?? "")
+		.join("")
+		.replace(/\s+/g, " ")
+		.trim();
 }
 
 function figureWord(lang: string): string {

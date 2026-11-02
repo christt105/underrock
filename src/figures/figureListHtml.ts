@@ -5,8 +5,9 @@ import type { FigureListSettings } from "./FigureListSettings";
 export function figureListHtml(figures: readonly FigureEntry[], list: FigureListSettings): string {
 	if (figures.length === 0) return "";
 	const items = figures.map((figure) => {
-		const caption = figure.caption === "" ? "" : ` <span class="underrock-figure-list-caption">${escapeText(figure.caption)}</span>`;
-		return `<li class="underrock-figure-list-entry"><a href="#${escapeAttribute(figure.id)}"><span class="underrock-figure-list-label">${escapeText(figure.label)}</span>${caption}</a></li>`;
+		const description =
+			figure.description === "" ? "" : ` <span class="underrock-figure-list-description">${escapeText(figure.description)}</span>`;
+		return `<li class="underrock-figure-list-entry"><a href="#${escapeAttribute(figure.id)}"><span class="underrock-figure-list-label">${escapeText(figure.label)}</span>${description}</a></li>`;
 	});
 	const title = list.title.trim() === "" ? "" : `<p class="underrock-figure-list-title">${escapeText(list.title.trim())}</p>`;
 	return `<nav class="underrock-figure-list">${title}<ol>${items.join("")}</ol></nav>`;

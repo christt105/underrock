@@ -3,16 +3,16 @@ import { DEFAULT_FIGURE_LIST } from "./FigureListSettings";
 import { figureListHtml } from "./figureListHtml";
 
 const FIGURES = [
-	{ id: "figure-bloch", label: "Figura 1", caption: "Esfera de Bloch & <qubit>", blockId: "bloch" },
-	{ id: "underrock-figure-2", label: "Figura 2", caption: "", blockId: "" },
+	{ id: "figure-bloch", label: "Figura 1", description: "Esfera de Bloch & <qubit>", blockId: "bloch" },
+	{ id: "underrock-figure-2", label: "Figura 2", description: "", blockId: "" },
 ];
 
 describe("figureListHtml", () => {
-	it("lists every figure with its label and caption, linking to it", () => {
+	it("lists every figure with its label and description, linking to it", () => {
 		const html = figureListHtml(FIGURES, DEFAULT_FIGURE_LIST);
 		expect(html).toContain('<p class="underrock-figure-list-title">List of figures</p>');
 		expect(html).toContain(
-			'<a href="#figure-bloch"><span class="underrock-figure-list-label">Figura 1</span> <span class="underrock-figure-list-caption">Esfera de Bloch &amp; &lt;qubit&gt;</span></a>',
+			'<a href="#figure-bloch"><span class="underrock-figure-list-label">Figura 1</span> <span class="underrock-figure-list-description">Esfera de Bloch &amp; &lt;qubit&gt;</span></a>',
 		);
 		expect(html).toContain('<a href="#underrock-figure-2"><span class="underrock-figure-list-label">Figura 2</span></a>');
 		expect(html.indexOf("figure-bloch")).toBeLessThan(html.indexOf("underrock-figure-2"));
