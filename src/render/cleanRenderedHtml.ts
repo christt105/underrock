@@ -21,7 +21,7 @@ const APP_CHROME = [
 export function cleanRenderedHtml(root: HTMLElement, options: CleanOptions): void {
 	root.querySelectorAll(APP_CHROME).forEach((el) => el.remove());
 	unwrapBlockWrappers(root);
-	wrapFigures(root);
+	wrapFigures(root, options.lang);
 	const headingIds = assignHeadingIds(root);
 	rewriteInternalLinks(root, headingIds, options);
 	root.querySelectorAll("a.tag").forEach(unwrap);

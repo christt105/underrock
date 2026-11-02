@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import type { CleanOptions } from "./CleanOptions";
 import { cleanRenderedHtml } from "./cleanRenderedHtml";
 
-const TEXT_LINKS: CleanOptions = { links: "text", vaultName: "My Vault" };
+const TEXT_LINKS: CleanOptions = { links: "text", vaultName: "My Vault", lang: "en" };
 
 function clean(html: string, options: CleanOptions = TEXT_LINKS): HTMLElement {
 	const root = document.createElement("div");
@@ -45,6 +45,7 @@ describe("cleanRenderedHtml", () => {
 		const root = clean('<p><a class="internal-link" data-href="Folder/Other note#Part">Other</a></p>', {
 			links: "obsidian-uri",
 			vaultName: "My Vault",
+			lang: "en",
 		});
 		expect(root.querySelector("a")?.getAttribute("href")).toBe(
 			"obsidian://open?vault=My%20Vault&file=Folder%2FOther%20note%23Part",

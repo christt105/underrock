@@ -148,24 +148,26 @@ video {
 }
 
 .underrock-figure figcaption {
-	margin-top: 0.4em;
+	margin-top: 0.5em;
 	font-size: 0.9em;
 	line-height: 1.3;
-	color: var(--ur-color-muted);
 	text-align: center;
 }
 
 .underrock-figure-row {
 	display: flex;
-	align-items: flex-start;
-	gap: 1em;
-	margin-bottom: var(--ur-paragraph-spacing);
+	align-items: flex-end;
+	gap: 1.5em;
 }
 
-.underrock-figure-row > .underrock-figure {
+.underrock-subfigure {
 	flex: 1 1 0;
 	min-width: 0;
 	margin: 0;
+}
+
+.underrock-subfigure figcaption {
+	margin-top: 0.3em;
 }
 
 code {
