@@ -5,6 +5,7 @@ import type { RenderSource } from "./RenderSource";
 import type { RenderedNote } from "./RenderedNote";
 import { markBlockIds } from "./blockIds";
 import { cleanRenderedHtml } from "./cleanRenderedHtml";
+import { collectHeadings } from "./collectHeadings";
 import { collectMathCss } from "./collectMathCss";
 import { waitForSettled } from "./waitForSettled";
 
@@ -23,7 +24,13 @@ export async function renderNote(app: App, source: RenderSource, options: CleanO
 		}
 		await waitForSettled(content, { quietMs: 250, timeoutMs: 10000 });
 		const figures = cleanRenderedHtml(content, options);
-		return { title: source.title, html: content.innerHTML, mathCss: collectMathCss(activeDocument), figures };
+		return {
+			title: source.title,
+			html: content.innerHTML,
+			mathCss: collectMathCss(activeDocument),
+			headings: collectHeadings(content),
+			figures,
+		};
 	} finally {
 		component.unload();
 		host.remove();

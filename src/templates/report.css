@@ -1,0 +1,21 @@
+:root {
+	--ur-size-h1: 26pt;
+	--ur-size-h2: 18pt;
+	--ur-paragraph-spacing: 0.8em;
+}
+
+p,
+li {
+	text-align: justify;
+}
+
+h1 {
+	break-before: page;
+	margin-top: 0;
+	padding-bottom: 0.3em;
+	border-bottom: 1px solid var(--ur-color-border);
+}
+
+body > h1:first-child {
+	break-before: auto;
+}

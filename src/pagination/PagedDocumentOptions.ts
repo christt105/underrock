@@ -6,6 +6,6 @@ export interface PagedDocumentOptions {
 	readonly baseUrl: string;
 	/** Extra stylesheets applied after the base ones, such as typography settings. */
 	readonly extraCss: readonly string[];
-	/** Pages placed before the note, such as the list of figures. */
+	/** Pages placed before the note, such as the table of contents or the list of figures. */
 	readonly leadingHtml?: readonly string[];
 }

@@ -1,4 +1,6 @@
 import { PAGE_COUNT_ATTRIBUTE, PAGINATED_EVENT } from "../../pagination/pagedScripts";
+import type { HeadingPosition } from "../../pdf/HeadingPosition";
+import type { PrintedDocument } from "./PrintedDocument";
 import type { PrintWebview } from "./PrintWebview";
 
 const PAGINATION_TIMEOUT_MS = 120000;
@@ -17,13 +19,25 @@ export const WAIT_FOR_PAGINATION = `new Promise((resolve, reject) => {
 	setTimeout(() => reject(new Error("Pagination timed out")), ${PAGINATION_TIMEOUT_MS});
 })`;
 
+/** Script evaluated in the paginated page; returns where each heading landed, for PDF bookmarks. */
+export const HEADING_POSITIONS = `Array.from(document.querySelectorAll(".pagedjs_page")).flatMap((page, pageIndex) => {
+	const box = page.getBoundingClientRect();
+	return Array.from(page.querySelectorAll(".pagedjs_page_content :is(h1, h2, h3, h4, h5, h6):not([data-split-from])")).map((heading) => ({
+		level: Number(heading.tagName.slice(1)),
+		title: (heading.textContent || "").trim(),
+		pageIndex,
+		top: heading.getBoundingClientRect().top - box.top,
+		pageHeight: box.height,
+	}));
+})`;
+
 /** Script that replaces the current page with `html`, running its scripts. */
 export function writeDocumentScript(html: string): string {
 	return `document.open(); document.write(${JSON.stringify(html)}); document.close(); true`;
 }
 
 /** Prints a self-paginating HTML document to PDF with Electron's `printToPDF`. */
-export async function printHtmlToPdf(html: string): Promise<Uint8Array> {
+export async function printHtmlToPdf(html: string): Promise<PrintedDocument> {
 	const webview = activeDocument.body.createEl("webview" as keyof HTMLElementTagNameMap, { cls: "underrock-print-webview" }) as PrintWebview;
 	try {
 		const ready = once(webview, "dom-ready", "did-fail-load");
@@ -31,7 +45,9 @@ export async function printHtmlToPdf(html: string): Promise<Uint8Array> {
 		if ((await ready) === "did-fail-load") throw new Error("Could not open the page to print");
 		await webview.executeJavaScript(writeDocumentScript(html));
 		await webview.executeJavaScript(WAIT_FOR_PAGINATION);
-		return await webview.printToPDF({ preferCSSPageSize: true, printBackground: true });
+		const headings = (await webview.executeJavaScript(HEADING_POSITIONS)) as HeadingPosition[];
+		const pdf = await webview.printToPDF({ preferCSSPageSize: true, printBackground: true });
+		return { pdf, headings };
 	} finally {
 		webview.remove();
 	}
