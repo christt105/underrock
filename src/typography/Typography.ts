@@ -1,3 +1,7 @@
+export const TEXT_ALIGNS = ["left", "center", "right", "justify"] as const;
+
+export type TextAlign = (typeof TEXT_ALIGNS)[number];
+
 export interface Typography {
 	/** CSS font family, or a comma-separated stack. Empty uses the built-in default. */
 	readonly bodyFont: string;
@@ -12,6 +16,8 @@ export interface Typography {
 	readonly h5Size: number;
 	readonly h6Size: number;
 	readonly lineHeight: number;
+	/** Alignment of paragraphs and list items. */
+	readonly textAlign: TextAlign;
 	readonly textColor: string;
 	readonly headingColor: string;
 	/** Vault folder whose font files become available by name. */
@@ -30,6 +36,7 @@ export const DEFAULT_TYPOGRAPHY: Typography = {
 	h5Size: 11,
 	h6Size: 11,
 	lineHeight: 1.5,
+	textAlign: "left",
 	textColor: "#1a1a1a",
 	headingColor: "#1a1a1a",
 	fontsFolder: "",
