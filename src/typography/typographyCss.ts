@@ -1,3 +1,4 @@
+import { TEXT_ALIGNS } from "./Typography";
 import type { Typography } from "./Typography";
 
 const HEADINGS = ["h1", "h2", "h3", "h4", "h5", "h6"] as const;
@@ -15,6 +16,7 @@ export function typographyCss(typography: Typography): string {
 	vars.push(`--ur-size-body: ${typography.bodySize}pt;`);
 	for (const level of HEADINGS) vars.push(`--ur-size-${level}: ${typography[`${level}Size`]}pt;`);
 	vars.push(`--ur-line-height: ${typography.lineHeight};`);
+	if ((TEXT_ALIGNS as readonly string[]).includes(typography.textAlign)) vars.push(`--ur-text-align: ${typography.textAlign};`);
 	if (isColor(typography.textColor)) vars.push(`--ur-color-text: ${typography.textColor};`);
 	if (isColor(typography.headingColor)) vars.push(`--ur-color-heading: ${typography.headingColor};`);
 	return `:root {\n${vars.map((v) => `\t${v}`).join("\n")}\n}\n`;

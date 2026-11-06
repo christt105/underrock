@@ -5,7 +5,7 @@ import { DEFAULT_HEADER_FOOTER, HORIZONTAL_POSITIONS, MARGIN_SLOTS } from "../ru
 import type { HeaderFooter } from "../running/HeaderFooter";
 import { DEFAULT_TOC } from "../toc/TocSettings";
 import type { TocSettings } from "../toc/TocSettings";
-import { DEFAULT_TYPOGRAPHY } from "../typography/Typography";
+import { DEFAULT_TYPOGRAPHY, TEXT_ALIGNS } from "../typography/Typography";
 import type { Typography } from "../typography/Typography";
 import type { AllowedValues } from "./applyOverrides";
 
@@ -34,6 +34,7 @@ export const DEFAULT_SETTINGS: UnderrockSettings = {
 export const ALLOWED_VALUES: AllowedValues = {
 	"page.size": ["A4", "A5", "Letter", "Legal"],
 	links: ["text", "obsidian-uri"],
+	"typography.textAlign": TEXT_ALIGNS,
 	"headerFooter.pageNumberPosition": MARGIN_SLOTS,
 	"headerFooter.headerPosition": HORIZONTAL_POSITIONS,
 	"headerFooter.footerPosition": HORIZONTAL_POSITIONS,
