@@ -1,4 +1,4 @@
-import { DEFAULT_TYPOGRAPHY } from "./Typography";
+import { DEFAULT_TYPOGRAPHY, TEXT_ALIGNS } from "./Typography";
 import type { Typography } from "./Typography";
 
 const HEADINGS = ["h1", "h2", "h3", "h4", "h5", "h6"] as const;
@@ -22,6 +22,7 @@ export function typographyCss(typography: Typography): string {
 		if (changed(`${level}Size`)) vars.push(`--ur-size-${level}: ${typography[`${level}Size`]}pt;`);
 	}
 	if (changed("lineHeight")) vars.push(`--ur-line-height: ${typography.lineHeight};`);
+	if (changed("textAlign") && (TEXT_ALIGNS as readonly string[]).includes(typography.textAlign)) vars.push(`--ur-text-align: ${typography.textAlign};`);
 	if (changed("textColor") && isColor(typography.textColor)) vars.push(`--ur-color-text: ${typography.textColor};`);
 	if (changed("headingColor") && isColor(typography.headingColor)) vars.push(`--ur-color-heading: ${typography.headingColor};`);
 	if (vars.length === 0) return "";
