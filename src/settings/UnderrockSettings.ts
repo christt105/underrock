@@ -18,6 +18,8 @@ export interface UnderrockSettings {
 	page: PageSetup;
 	typography: Typography;
 	headerFooter: HeaderFooter;
+	/** Whether the document opens with a title page. */
+	cover: boolean;
 	toc: TocSettings;
 	/** Whether the PDF gets a bookmark for each heading. */
 	bookmarks: boolean;
@@ -32,6 +34,7 @@ export const DEFAULT_SETTINGS: UnderrockSettings = {
 	page: DEFAULT_PAGE_SETUP,
 	typography: DEFAULT_TYPOGRAPHY,
 	headerFooter: DEFAULT_HEADER_FOOTER,
+	cover: false,
 	toc: DEFAULT_TOC,
 	bookmarks: true,
 	links: "text",
