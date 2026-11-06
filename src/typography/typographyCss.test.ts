@@ -18,11 +18,19 @@ describe("typographyCss", () => {
 	});
 
 	it("writes the text alignment and skips unknown values", () => {
-		for (const textAlign of TEXT_ALIGNS) {
+		for (const textAlign of TEXT_ALIGNS.filter((align) => align !== DEFAULT_TYPOGRAPHY.textAlign)) {
 			expect(typographyCss({ ...DEFAULT_TYPOGRAPHY, textAlign })).toContain(`--ur-text-align: ${textAlign};`);
 		}
 		const css = typographyCss({ ...DEFAULT_TYPOGRAPHY, textAlign: "center; color: red" as "left" });
 		expect(css).not.toContain("--ur-text-align");
+	});
+
+	it("leaves settings at their default to the template", () => {
+		expect(typographyCss(DEFAULT_TYPOGRAPHY)).toBe("");
+		const css = typographyCss({ ...DEFAULT_TYPOGRAPHY, h1Size: 30 });
+		expect(css).toContain("--ur-size-h1: 30pt;");
+		expect(css).not.toContain("--ur-size-body");
+		expect(css).not.toContain("--ur-color-heading");
 	});
 
 	it("sets fonts when given", () => {
