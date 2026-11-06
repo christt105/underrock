@@ -8,7 +8,7 @@ import { longDocument } from "../testing/sampleContent";
 describe("preview frame", () => {
 	it("paginates inside a srcdoc iframe, zooms with CSS zoom and finds the page in view", async () => {
 		const html = buildPagedDocument(
-			{ title: "Preview", html: longDocument(60), mathCss: "" },
+			{ title: "Preview", html: longDocument(60), mathCss: "", headings: [] },
 			{ page: DEFAULT_PAGE_SETUP, lang: "en", baseUrl: "about:blank", extraCss: [] },
 		);
 		const browser = await chromium.launch();
