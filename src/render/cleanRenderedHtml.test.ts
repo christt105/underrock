@@ -1,9 +1,12 @@
 // @vitest-environment happy-dom
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
+import { stubObsidianDom } from "../testing/obsidianDom";
 import type { CleanOptions } from "./CleanOptions";
 import { cleanRenderedHtml } from "./cleanRenderedHtml";
 
-const TEXT_LINKS: CleanOptions = { links: "text", vaultName: "My Vault" };
+beforeAll(stubObsidianDom);
+
+const TEXT_LINKS: CleanOptions = { links: "text", vaultName: "My Vault", lang: "en" };
 
 function clean(html: string, options: CleanOptions = TEXT_LINKS): HTMLElement {
 	const root = document.createElement("div");
@@ -45,6 +48,7 @@ describe("cleanRenderedHtml", () => {
 		const root = clean('<p><a class="internal-link" data-href="Folder/Other note#Part">Other</a></p>', {
 			links: "obsidian-uri",
 			vaultName: "My Vault",
+			lang: "en",
 		});
 		expect(root.querySelector("a")?.getAttribute("href")).toBe(
 			"obsidian://open?vault=My%20Vault&file=Folder%2FOther%20note%23Part",
@@ -56,5 +60,18 @@ describe("cleanRenderedHtml", () => {
 		expect(root.querySelector("a.external-link")?.getAttribute("href")).toBe("https://example.com");
 		expect(root.querySelector("a.tag")).toBeNull();
 		expect(root.textContent).toBe("web #idea");
+	});
+
+	it("points links to a figure's block id at the figure and shows its number", () => {
+		const root = clean(
+			'<p><img alt="Bloch sphere" src="bloch.png"><br>The Bloch sphere <span data-underrock-block-id="bloch"></span></p>' +
+			'<p>See <a class="internal-link" data-href="#^bloch" href="#^bloch">^bloch</a> and ' +
+			'<a class="internal-link" data-href="#^bloch" href="#^bloch">the sphere</a>.</p>',
+			{ ...TEXT_LINKS, lang: "es" },
+		);
+		const links = Array.from(root.querySelectorAll("a"));
+		expect(links.map((a) => a.getAttribute("href"))).toEqual(["#figure-bloch", "#figure-bloch"]);
+		expect(links.map((a) => a.textContent)).toEqual(["Figura 1", "the sphere"]);
+		expect(root.querySelector("#figure-bloch")?.tagName).toBe("FIGURE");
 	});
 });

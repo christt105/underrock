@@ -26,4 +26,10 @@ describe("settingsForNote", () => {
 		expect(note.typography.h1Size).toBe(DEFAULT_SETTINGS.typography.h1Size);
 		expect(note.page.size).toBe("Letter");
 	});
+
+	it("lets a note turn the list of figures on or off", () => {
+		expect(settingsForNote(DEFAULT_SETTINGS, { figureList: { enabled: true } }).figureList.enabled).toBe(true);
+		const global = loadSettings({ figureList: { enabled: true } });
+		expect(settingsForNote(global, { figureList: { enabled: false } }).figureList.enabled).toBe(false);
+	});
 });

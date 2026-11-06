@@ -141,6 +141,39 @@ video {
 	text-align: center;
 }
 
+.underrock-figure {
+	margin-left: 0;
+	margin-right: 0;
+	text-align: center;
+}
+
+.underrock-figure figcaption {
+	margin-top: 0.5em;
+	font-size: 0.9em;
+	line-height: 1.3;
+	text-align: center;
+}
+
+.underrock-figure-row {
+	display: flex;
+	align-items: flex-end;
+	gap: 1.5em;
+}
+
+.underrock-subfigure {
+	flex: 1 1 0;
+	min-width: 0;
+	margin: 0;
+}
+
+.underrock-subfigure figcaption {
+	margin-top: 0.3em;
+}
+
+.underrock-figure-label {
+	font-weight: 700;
+}
+
 code {
 	font-family: var(--ur-font-code);
 	font-size: var(--ur-size-code);
@@ -317,7 +350,8 @@ a.footnote-link {
 	color: var(--ur-color-accent);
 }
 
-.underrock-toc-title {
+.underrock-toc-title,
+.underrock-figure-list-title {
 	color: var(--ur-color-heading);
 	font-family: var(--ur-font-heading);
 	font-size: var(--ur-size-h1);
@@ -326,7 +360,8 @@ a.footnote-link {
 	margin: 0 0 1em;
 }
 
-.underrock-toc ol {
+.underrock-toc ol,
+.underrock-figure-list ol {
 	list-style: none;
 	margin: 0;
 	padding: 0;
@@ -349,6 +384,17 @@ a.footnote-link {
 
 .underrock-toc-entry a {
 	display: flex;
+	color: inherit;
+	text-decoration: none;
+}
+
+.underrock-figure-list-entry {
+	margin: 0.3em 0;
+}
+
+.underrock-figure-list-entry a {
+	display: flex;
+	gap: 0.4em;
 	color: inherit;
 	text-decoration: none;
 }
@@ -378,4 +424,9 @@ a.footnote-link {
 .underrock-cover-date {
 	color: var(--ur-color-muted);
 	margin: 0;
+}
+
+.underrock-figure-list-label {
+	flex: none;
+	font-weight: 700;
 }

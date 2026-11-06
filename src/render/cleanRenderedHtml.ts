@@ -1,5 +1,7 @@
 import type { CleanOptions } from "./CleanOptions";
 import { markLayoutHints } from "../pagination/markLayoutHints";
+import type { FigureEntry } from "./FigureEntry";
+import { wrapFigures } from "./figures";
 import { assignHeadingIds } from "./headingIds";
 
 const APP_CHROME = [
@@ -16,14 +18,20 @@ const APP_CHROME = [
 	".embedded-backlinks",
 ].join(", ");
 
-/** Strips Obsidian UI from rendered Markdown and rewrites links so the HTML stands on its own. */
-export function cleanRenderedHtml(root: HTMLElement, options: CleanOptions): void {
+/**
+ * Strips Obsidian UI from rendered Markdown and rewrites links so the HTML stands on its own.
+ * Returns the figures it numbered.
+ */
+export function cleanRenderedHtml(root: HTMLElement, options: CleanOptions): FigureEntry[] {
 	root.querySelectorAll(APP_CHROME).forEach((el) => el.remove());
 	unwrapBlockWrappers(root);
+	const figures = wrapFigures(root, options.lang);
 	const headingIds = assignHeadingIds(root);
-	rewriteInternalLinks(root, headingIds, options);
+	const figuresByBlockId = new Map(figures.filter((figure) => figure.blockId !== "").map((figure) => [figure.blockId, figure]));
+	rewriteInternalLinks(root, headingIds, figuresByBlockId, options);
 	root.querySelectorAll("a.tag").forEach(unwrap);
 	markLayoutHints(root);
+	return figures;
 }
 
 function unwrapBlockWrappers(root: HTMLElement): void {
@@ -35,10 +43,25 @@ function unwrapBlockWrappers(root: HTMLElement): void {
 	}
 }
 
-function rewriteInternalLinks(root: HTMLElement, headingIds: Map<string, string>, options: CleanOptions): void {
+function rewriteInternalLinks(
+	root: HTMLElement,
+	headingIds: Map<string, string>,
+	figures: Map<string, FigureEntry>,
+	options: CleanOptions,
+): void {
 	for (const link of Array.from(root.querySelectorAll<HTMLAnchorElement>("a.internal-link"))) {
 		const target = link.getAttribute("data-href") ?? link.getAttribute("href") ?? "";
-		if (target.startsWith("#")) {
+		if (target.startsWith("#^")) {
+			const blockId = target.slice(2);
+			const figure = figures.get(blockId);
+			if (figure !== undefined) {
+				// Without an alias Obsidian shows the link itself, such as "^chart"; show the figure's number instead.
+				if ((link.textContent ?? "").trim().endsWith(`^${blockId}`)) link.textContent = figure.label;
+				link.setAttribute("href", `#${figure.id}`);
+				link.removeAttribute("target");
+				continue;
+			}
+		} else if (target.startsWith("#")) {
 			const id = headingIds.get(target.slice(1));
 			if (id !== undefined) {
 				link.setAttribute("href", `#${id}`);

@@ -2,6 +2,7 @@ import { TFile } from "obsidian";
 import type { App } from "obsidian";
 import { coverHtml } from "../cover/coverHtml";
 import { absoluteCssUrls } from "../pagination/absoluteCssUrls";
+import { figureListHtml } from "../figures/figureListHtml";
 import { buildPagedDocument } from "../pagination/buildPagedDocument";
 import { renderNote } from "../render/renderNote";
 import { marginBoxesCss } from "../running/marginBoxesCss";
@@ -30,7 +31,7 @@ export class DocumentBuilder {
 	async build(source: RenderSource): Promise<string> {
 		const settings = this.settingsFor(source);
 		const lang = source.lang ?? settings.language;
-		const note = await renderNote(this.app, source, { links: settings.links, vaultName: this.app.vault.getName() });
+		const note = await renderNote(this.app, source, { links: settings.links, vaultName: this.app.vault.getName(), lang });
 		const date = source.date ?? new Date().toLocaleDateString(lang, { year: "numeric", month: "long", day: "numeric" });
 		return buildPagedDocument(note, {
 			page: settings.page,
@@ -39,6 +40,7 @@ export class DocumentBuilder {
 			leadingHtml: [
 				settings.cover ? coverHtml({ title: source.title, author: source.author, date }) : "",
 				settings.toc.enabled ? tocHtml(note.headings, settings.toc) : "",
+				settings.figureList.enabled ? figureListHtml(note.figures, settings.figureList) : "",
 			],
 			extraCss: [
 				fontFaceCss(this.fontFiles(settings.typography.fontsFolder)),

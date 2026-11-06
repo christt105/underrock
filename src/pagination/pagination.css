@@ -18,6 +18,7 @@ img,
 svg,
 figure,
 .image-embed,
+.underrock-figure-row,
 .math-block,
 mjx-container[display="true"],
 .mermaid,
@@ -51,7 +52,16 @@ pre.underrock-short {
 	break-inside: avoid;
 }
 
-.underrock-toc-entry a::after {
+.underrock-figure-list {
+	break-after: page;
+}
+
+.underrock-figure-list-entry {
+	break-inside: avoid;
+}
+
+.underrock-toc-entry a::after,
+.underrock-figure-list-entry a::after {
 	content: target-counter(attr(href), page);
 	margin-left: auto;
 	padding-left: 1em;
