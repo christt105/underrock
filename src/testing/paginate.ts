@@ -17,7 +17,7 @@ export async function paginate(bodyHtml: string, options: Partial<PagedDocumentO
 	browser ??= await chromium.launch();
 	const page = await browser.newPage();
 	const html = buildPagedDocument(
-		{ title: "Layout test", html: bodyHtml, mathCss: "" },
+		{ title: "Layout test", html: bodyHtml, mathCss: "", headings: [] },
 		{ page: DEFAULT_PAGE_SETUP, lang: "en", baseUrl: "about:blank", extraCss: [], ...options },
 	);
 	await page.setContent(html);

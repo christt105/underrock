@@ -11,6 +11,7 @@
 	--ur-size-h6: 11pt;
 	--ur-size-code: 0.88em;
 	--ur-line-height: 1.5;
+	--ur-text-align: left;
 	--ur-color-text: #1a1a1a;
 	--ur-color-heading: var(--ur-color-text);
 	--ur-color-muted: #5c5c5c;
@@ -34,6 +35,11 @@ body {
 	margin: 0;
 	hyphens: auto;
 	overflow-wrap: break-word;
+}
+
+p,
+li {
+	text-align: var(--ur-text-align);
 }
 
 p,
@@ -309,4 +315,67 @@ mjx-container[display="true"] {
 sup.footnote-ref a,
 a.footnote-link {
 	color: var(--ur-color-accent);
+}
+
+.underrock-toc-title {
+	color: var(--ur-color-heading);
+	font-family: var(--ur-font-heading);
+	font-size: var(--ur-size-h1);
+	font-weight: 700;
+	line-height: 1.2;
+	margin: 0 0 1em;
+}
+
+.underrock-toc ol {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.underrock-toc-entry {
+	margin: 0.2em 0;
+}
+
+.underrock-toc-entry[data-depth="0"] {
+	font-weight: 700;
+	margin-top: 0.6em;
+}
+
+.underrock-toc-entry[data-depth="1"] { padding-left: 1.5em; }
+.underrock-toc-entry[data-depth="2"] { padding-left: 3em; }
+.underrock-toc-entry[data-depth="3"] { padding-left: 4.5em; }
+.underrock-toc-entry[data-depth="4"] { padding-left: 6em; }
+.underrock-toc-entry[data-depth="5"] { padding-left: 7.5em; }
+
+.underrock-toc-entry a {
+	display: flex;
+	color: inherit;
+	text-decoration: none;
+}
+
+.underrock-cover {
+	padding-top: 45%;
+}
+
+.underrock-cover > * {
+	text-align: center;
+}
+
+.underrock-cover-title {
+	color: var(--ur-color-heading);
+	font-family: var(--ur-font-heading);
+	font-size: calc(var(--ur-size-h1) * 1.4);
+	font-weight: 700;
+	line-height: 1.2;
+	margin: 0 0 1.5em;
+}
+
+.underrock-cover-author {
+	font-size: var(--ur-size-h3);
+	margin: 0 0 0.5em;
+}
+
+.underrock-cover-date {
+	color: var(--ur-color-muted);
+	margin: 0;
 }

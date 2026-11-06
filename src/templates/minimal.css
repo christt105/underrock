@@ -1,0 +1,26 @@
+:root {
+	--ur-font-body: system-ui, "Helvetica Neue", "Arial", sans-serif;
+	--ur-size-body: 10.5pt;
+	--ur-size-h1: 18pt;
+	--ur-size-h2: 14pt;
+	--ur-size-h3: 12pt;
+	--ur-size-h4: 11pt;
+	--ur-size-h5: 10.5pt;
+	--ur-size-h6: 10.5pt;
+	--ur-line-height: 1.45;
+	--ur-color-accent: var(--ur-color-text);
+	--ur-paragraph-spacing: 0.5em;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	font-weight: 600;
+}
+
+.callout {
+	background: none;
+}

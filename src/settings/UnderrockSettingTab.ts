@@ -2,6 +2,9 @@ import { PluginSettingTab } from "obsidian";
 import type { App, SettingDefinitionItem } from "obsidian";
 import type { PageSize } from "../pagination/PageSize";
 import type { HorizontalPosition, MarginSlot } from "../running/MarginSlot";
+import { BUILT_IN_TEMPLATES } from "../templates/builtInTemplates";
+import { userTemplateFiles } from "../templates/userTemplateFiles";
+import type { TextAlign } from "../typography/Typography";
 import type { SettingsHost } from "./SettingsHost";
 import { getSettingPath, setSettingPath } from "./settingPath";
 
@@ -23,6 +26,8 @@ const MARGIN_SLOT_NAMES: Record<MarginSlot, string> = {
 
 const POSITION_NAMES: Record<HorizontalPosition, string> = { left: "Left", center: "Centre", right: "Right" };
 
+const TEXT_ALIGN_NAMES: Record<TextAlign, string> = { left: "Left", center: "Centre", right: "Right", justify: "Justified" };
+
 const HEADING_SIZES: [string, string][] = [1, 2, 3, 4, 5, 6].map((level) => [`typography.h${level}Size`, `Heading ${level} size`]);
 
 const MARGINS: [string, string][] = [
@@ -42,6 +47,22 @@ export class UnderrockSettingTab extends PluginSettingTab {
 
 	override getSettingDefinitions(): SettingDefinitionItem[] {
 		return [
+			{
+				type: "group",
+				heading: "Template",
+				items: [
+					{
+						name: "Template",
+						desc: "Base style of the document. Settings below that you change apply on top of it.",
+						control: { type: "dropdown", key: "template", options: this.templateOptions() },
+					},
+					{
+						name: "Templates folder",
+						desc: "Each CSS file in this folder becomes a template named after the file.",
+						control: { type: "folder", key: "templatesFolder" },
+					},
+				],
+			},
 			{
 				type: "group",
 				heading: "Page",
@@ -93,6 +114,11 @@ export class UnderrockSettingTab extends PluginSettingTab {
 						desc: "Multiple of the font size.",
 						control: { type: "number", key: "typography.lineHeight", min: 1, max: 3, step: 0.05 },
 					},
+					{
+						name: "Text alignment",
+						desc: "Justified text is hyphenated using the document language.",
+						control: { type: "dropdown", key: "typography.textAlign", options: TEXT_ALIGN_NAMES },
+					},
 					{ name: "Text colour", control: { type: "color", key: "typography.textColor" } },
 					{ name: "Heading colour", control: { type: "color", key: "typography.headingColor" } },
 				],
@@ -138,6 +164,33 @@ export class UnderrockSettingTab extends PluginSettingTab {
 			},
 			{
 				type: "group",
+				heading: "Cover, contents and bookmarks",
+				items: [
+					{
+						name: "Cover page",
+						desc: "Opens the document with a page showing the note's title, author and date, without page number, header or footer.",
+						control: { type: "toggle", key: "cover" },
+					},
+					{
+						name: "Table of contents",
+						desc: "Adds a page before the note that lists its headings with their page numbers.",
+						control: { type: "toggle", key: "toc.enabled" },
+					},
+					{
+						name: "Contents depth",
+						desc: "Deepest heading level listed, from 1 to 6.",
+						control: { type: "number", key: "toc.depth", min: 1, max: 6, step: 1 },
+					},
+					{ name: "Contents title", control: { type: "text", key: "toc.title", placeholder: "Contents" } },
+					{
+						name: "PDF bookmarks",
+						desc: "Adds a bookmark for each heading to the exported PDF.",
+						control: { type: "toggle", key: "bookmarks" },
+					},
+				],
+			},
+			{
+				type: "group",
 				heading: "Content",
 				items: [
 					{
@@ -157,6 +210,15 @@ export class UnderrockSettingTab extends PluginSettingTab {
 				],
 			},
 		];
+	}
+
+	private templateOptions(): Record<string, string> {
+		const options: Record<string, string> = { article: "Article", report: "Report", minimal: "Minimal" };
+		for (const name of BUILT_IN_TEMPLATES.keys()) options[name] ??= name;
+		for (const file of userTemplateFiles(this.app, this.host.settings.templatesFolder)) options[file.basename] = file.basename;
+		const current = this.host.settings.template;
+		options[current] ??= current;
+		return options;
 	}
 
 	override getControlValue(key: string): unknown {

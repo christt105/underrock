@@ -29,6 +29,35 @@ pre.underrock-short {
 	break-inside: avoid;
 }
 
+.underrock-cover {
+	page: cover;
+	break-after: page;
+}
+
+@page cover {
+	@top-left { content: none; }
+	@top-center { content: none; }
+	@top-right { content: none; }
+	@bottom-left { content: none; }
+	@bottom-center { content: none; }
+	@bottom-right { content: none; }
+}
+
+.underrock-toc {
+	break-after: page;
+}
+
+.underrock-toc-entry {
+	break-inside: avoid;
+}
+
+.underrock-toc-entry a::after {
+	content: target-counter(attr(href), page);
+	margin-left: auto;
+	padding-left: 1em;
+	font-variant-numeric: tabular-nums;
+}
+
 .page-break,
 .underrock-page-break {
 	break-after: page;

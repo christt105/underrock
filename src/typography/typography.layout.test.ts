@@ -14,6 +14,7 @@ describe("typography settings", () => {
 			bodySize: 14,
 			h1Size: 30,
 			lineHeight: 2,
+			textAlign: "justify",
 			textColor: "#222222",
 			headingColor: "#ff0000",
 		});
@@ -26,6 +27,7 @@ describe("typography settings", () => {
 				pFont: getComputedStyle(p).fontFamily,
 				pSize: getComputedStyle(p).fontSize,
 				pLineHeight: getComputedStyle(p).lineHeight,
+				pAlign: getComputedStyle(p).textAlign,
 				pColor: getComputedStyle(p).color,
 				h1Size: getComputedStyle(h1).fontSize,
 				h1Color: getComputedStyle(h1).color,
@@ -35,6 +37,7 @@ describe("typography settings", () => {
 			pFont: "monospace",
 			pSize: "18.6667px",
 			pLineHeight: "37.3333px",
+			pAlign: "justify",
 			pColor: "rgb(34, 34, 34)",
 			h1Size: "40px",
 			h1Color: "rgb(255, 0, 0)",
