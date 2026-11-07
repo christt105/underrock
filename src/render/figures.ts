@@ -1,5 +1,6 @@
 import type { FigureEntry } from "./FigureEntry";
 import { BLOCK_ID_ATTRIBUTE } from "./blockIds";
+import { SOURCE_LINE_ATTRIBUTE } from "./sourceLines";
 
 /** Width-only alt text, as in `![[photo.png|300]]` or `![[photo.png|300x200]]`. */
 const SIZE_ONLY = /^\d+(?:x\d+)?$/;
@@ -136,9 +137,12 @@ function joinLines(lines: Line[], separator: () => Node): Node[] {
 	return lines.flatMap((line, i) => (i === 0 ? line : [separator(), ...line]));
 }
 
-/** Whitespace, or the marker of a block id, which has no content. */
+/** Whitespace, or the marker of a block id or a source line, which has no content. */
 function isBlank(node: Node): boolean {
-	if (node.nodeType === node.ELEMENT_NODE) return (node as Element).hasAttribute(BLOCK_ID_ATTRIBUTE);
+	if (node.nodeType === node.ELEMENT_NODE) {
+		const el = node as Element;
+		return el.hasAttribute(BLOCK_ID_ATTRIBUTE) || el.hasAttribute(SOURCE_LINE_ATTRIBUTE);
+	}
 	return node.nodeType === node.TEXT_NODE && (node.textContent ?? "").trim() === "";
 }
 
