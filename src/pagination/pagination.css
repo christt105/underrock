@@ -89,3 +89,10 @@ pre.underrock-short {
 	font-size: 9pt;
 	color: var(--ur-color-muted);
 }
+
+[data-footnote-call]::after {
+	vertical-align: super;
+	font-size: 0.7em;
+	line-height: 0;
+	font-variant-position: normal;
+}

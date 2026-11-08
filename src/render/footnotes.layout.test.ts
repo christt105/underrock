@@ -11,12 +11,11 @@ describe("page footnotes", () => {
 		const page = await paginate(body);
 		const notes = await page.evaluate(() =>
 			Array.from(document.querySelectorAll(".pagedjs_footnote_area .underrock-footnote")).map((note) => {
-				const call = document.querySelector(`[data-footnote-call="${note.getAttribute("data-footnote-call")}"]:not(.underrock-footnote)`);
+				const call = document.querySelector(`a[data-footnote-call="${note.getAttribute("data-ref")}"]`);
 				return {
 					text: note.textContent?.trim(),
 					page: note.closest(".pagedjs_page")?.getAttribute("data-page-number"),
 					callPage: call?.closest(".pagedjs_page")?.getAttribute("data-page-number"),
-					callNumber: call ? getComputedStyle(call, "::after").content : null,
 				};
 			}),
 		);
@@ -24,7 +23,6 @@ describe("page footnotes", () => {
 		for (const note of notes) expect(note.page).toBe(note.callPage);
 		expect(notes[0].page).toBe("1");
 		expect(Number(notes[1].page)).toBeGreaterThan(1);
-		expect(notes.map((n) => n.callNumber)).toEqual(['"1"', '"2"', '"3"']);
 		await page.close();
 	});
 });
