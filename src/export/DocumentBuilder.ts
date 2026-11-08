@@ -31,7 +31,7 @@ export class DocumentBuilder {
 	async build(source: RenderSource): Promise<string> {
 		const settings = this.settingsFor(source);
 		const lang = source.lang ?? settings.language;
-		const note = await renderNote(this.app, source, { links: settings.links, vaultName: this.app.vault.getName(), lang });
+		const note = await renderNote(this.app, source, { links: settings.links, footnotes: settings.footnotes, vaultName: this.app.vault.getName(), lang });
 		const date = source.date ?? new Date().toLocaleDateString(lang, { year: "numeric", month: "long", day: "numeric" });
 		return buildPagedDocument(note, {
 			page: settings.page,

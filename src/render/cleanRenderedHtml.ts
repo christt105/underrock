@@ -3,6 +3,7 @@ import { markLayoutHints } from "../pagination/markLayoutHints";
 import type { FigureEntry } from "./FigureEntry";
 import { numberEquations } from "./equations";
 import { wrapFigures } from "./figures";
+import { placeFootnotesOnPages } from "./footnotes";
 import { assignHeadingIds } from "./headingIds";
 
 const APP_CHROME = [
@@ -35,6 +36,7 @@ export function cleanRenderedHtml(root: HTMLElement, options: CleanOptions): Fig
 	}
 	rewriteInternalLinks(root, headingIds, blockTargets, options);
 	root.querySelectorAll("a.tag").forEach(unwrap);
+	if (options.footnotes === "page") placeFootnotesOnPages(root);
 	markLayoutHints(root);
 	return figures;
 }
