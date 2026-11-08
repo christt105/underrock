@@ -363,6 +363,17 @@ a.footnote-link {
 	color: var(--ur-color-accent);
 }
 
+.underrock-footnote {
+	font-size: 0.85em;
+	line-height: 1.35;
+	text-align: left;
+}
+
+sup.underrock-footnote-ref {
+	font-size: 0.7em;
+	line-height: 0;
+}
+
 .underrock-toc-title,
 .underrock-figure-list-title {
 	color: var(--ur-color-heading);
