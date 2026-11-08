@@ -33,7 +33,7 @@ export function markBlockIds(markdown: string): string {
  * If the line opens a fenced code or math block, a test for the line that closes it. A line like
  * ```` ```code``` ```` is inline code, not a fence, and `$$x$$` is math on one line.
  */
-function opensBlock(line: string): ((line: string) => boolean) | null {
+export function opensBlock(line: string): ((line: string) => boolean) | null {
 	const code = CODE_FENCE.exec(line);
 	if (code !== null) {
 		const [, fence, rest] = code;

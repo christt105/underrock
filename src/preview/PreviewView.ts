@@ -1,8 +1,9 @@
-import { ItemView, MarkdownView, debounce, setIcon } from "obsidian";
+import { ItemView, MarkdownView, Notice, debounce, setIcon } from "obsidian";
 import type { TFile, WorkspaceLeaf } from "obsidian";
 import { sourceFromFile } from "../render/sourceFromFile";
 import type { PreviewHost } from "./PreviewHost";
 import { keepLinksInDocument } from "./inDocumentLinks";
+import { clickedWord, locateInSource } from "./sourceLocation";
 import { waitForPagination } from "./waitForPagination";
 import { ZOOM_STEP, clampZoom, fitWidthZoom } from "./zoom";
 
@@ -119,11 +120,40 @@ export class PreviewView extends ItemView {
 
 	/** Unsaved editor content if the note is open, so the preview follows typing before autosave. */
 	private editorText(file: TFile): string | undefined {
+		return this.markdownViewOf(file)?.editor.getValue();
+	}
+
+	private markdownViewOf(file: TFile): MarkdownView | undefined {
 		for (const leaf of this.app.workspace.getLeavesOfType("markdown")) {
 			const view = leaf.view;
-			if (view instanceof MarkdownView && view.file === file) return view.editor.getValue();
+			if (view instanceof MarkdownView && view.file === file) return view;
 		}
 		return undefined;
+	}
+
+	/** Moves the note's editor to the line and word double-clicked in the preview, opening the note if needed. */
+	private async revealInEditor(doc: Document): Promise<void> {
+		const file = this.file;
+		const clicked = clickedWord(doc);
+		if (!file || !clicked) return;
+		let view = this.markdownViewOf(file);
+		if (!view) {
+			const leaf = this.app.workspace.getLeaf("tab");
+			await leaf.openFile(file);
+			if (!(leaf.view instanceof MarkdownView)) return;
+			view = leaf.view;
+		}
+		const range = locateInSource(view.editor.getValue(), clicked);
+		if (!range) {
+			new Notice(`"${clicked.word}" is not in the note: Underrock added it.`);
+			return;
+		}
+		if (view.getMode() === "preview") await view.setState({ ...view.getState(), mode: "source" }, { history: false });
+		this.app.workspace.setActiveLeaf(view.leaf, { focus: true });
+		const from = view.editor.offsetToPos(range.from);
+		const to = view.editor.offsetToPos(range.to);
+		view.editor.setSelection(from, to);
+		view.editor.scrollIntoView({ from, to }, true);
 	}
 
 	private async render(): Promise<void> {
@@ -161,6 +191,7 @@ export class PreviewView extends ItemView {
 		this.status.hide();
 		frame.contentWindow?.addEventListener("scroll", () => this.updatePageLabel(), { passive: true });
 		keepLinksInDocument(doc);
+		doc.addEventListener("dblclick", () => void this.revealInEditor(doc));
 		this.updatePageLabel();
 	}
 

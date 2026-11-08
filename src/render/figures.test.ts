@@ -106,6 +106,14 @@ describe("wrapFigures", () => {
 		expect(wrap(`<p>${embed("a.png", "A")}<br>Between<br>${embed("b.png", "B")}</p>`).querySelector("figure")).toBeNull();
 	});
 
+	it("ignores source line markers", () => {
+		const line = (n: number) => `<span data-underrock-line="${n}"></span>`;
+		const root = wrap(`<p>${embed("a.png")}${line(4)}<br>${embed("b.png")}${line(5)}<br>Two images${line(6)}</p>`);
+		expect(root.querySelectorAll(".underrock-subfigure")).toHaveLength(2);
+		expect(captions(root)).toEqual(["Figure 1: Two images"]);
+		expect(root.querySelector('.underrock-figure > figcaption [data-underrock-line="6"]')).not.toBeNull();
+	});
+
 	it("leaves embeds that are not loaded images alone", () => {
 		const root = wrap('<p><span class="internal-embed image-embed is-unresolved" src="missing.png" alt="Missing"></span></p>');
 		expect(root.querySelector("figure")).toBeNull();
