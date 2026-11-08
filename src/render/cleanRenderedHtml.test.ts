@@ -87,4 +87,16 @@ describe("cleanRenderedHtml", () => {
 		expect(link?.textContent).toBe("Ecuación (1)");
 		expect(root.querySelector("#equation-entropia .underrock-equation-number")?.textContent).toBe("(1)");
 	});
+
+	it("points links to notes included in the document within it", () => {
+		const root = clean(
+			'<h2 data-heading="Bloch">Bloch</h2>' +
+				'<p><a class="internal-link" data-href="2. Qubits#Bloch">Bloch</a>, ' +
+				'<a class="internal-link" data-href="Fisica/2. Qubits">the chapter</a> and ' +
+				'<a class="internal-link" data-href="Otra nota">another note</a></p>',
+			{ ...TEXT_LINKS, includedNotes: ["Fisica/2. Qubits.md"] },
+		);
+		expect(Array.from(root.querySelectorAll("a"), (a) => a.getAttribute("href"))).toEqual(["#bloch", "#note-fisica-2-qubits"]);
+		expect(root.textContent).toContain("another note");
+	});
 });

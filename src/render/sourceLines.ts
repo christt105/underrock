@@ -3,6 +3,9 @@ import { opensBlock } from "./blockIds";
 /** Attribute of the marker that keeps a line's number in the note, from 0, in the rendered HTML. */
 export const SOURCE_LINE_ATTRIBUTE = "data-underrock-line";
 
+/** Attribute of the same marker that names the included note the line comes from, if not the main one. */
+export const SOURCE_FILE_ATTRIBUTE = "data-underrock-file";
+
 /** A heading, also inside a list item or a quote, like `- ## Title` or `> ## Title`. */
 const HEADING = /^\s*((>\s*)|(([-*+]|\d+[.)])\s+))*#{1,6}(\s|$)/;
 const SETEXT_UNDERLINE = /^\s{0,3}(=+|-+)\s*$/;
@@ -18,9 +21,9 @@ const HARD_BREAK = /( {2,}|\\)$/;
  * in the preview can be traced back to its line. `firstLine` is the number of the Markdown's first
  * line, after the frontmatter. Lines where a marker would change what renders are left alone: code
  * and math blocks, headings (their text names them in links), tables, callout titles, horizontal
- * rules and indented code.
+ * rules and indented code. `file` is the vault path of an included note the lines come from.
  */
-export function markSourceLines(markdown: string, firstLine: number): string {
+export function markSourceLines(markdown: string, firstLine: number, file?: string): string {
 	const lines = markdown.split("\n");
 	const skip = new Array<boolean>(lines.length).fill(false);
 	let closes: ((line: string) => boolean) | null = null;
@@ -67,12 +70,12 @@ export function markSourceLines(markdown: string, firstLine: number): string {
 			for (let j = i; j < lines.length && lines[j].trim() !== "" && lines[j].includes("|"); j++) skip[j] = true;
 		}
 	}
-	return lines.map((line, i) => (skip[i] ? line : withMarker(line, firstLine + i))).join("\n");
+	const fileAttribute = file === undefined ? "" : ` ${SOURCE_FILE_ATTRIBUTE}="${file.replace(/&/g, "&amp;").replace(/"/g, "&quot;")}"`;
+	return lines.map((line, i) => (skip[i] ? line : withMarker(line, `<span ${SOURCE_LINE_ATTRIBUTE}="${firstLine + i}"${fileAttribute}></span>`))).join("\n");
 }
 
 /** Adds the marker before a trailing hard line break, so the break still works. */
-function withMarker(line: string, number: number): string {
-	const marker = `<span ${SOURCE_LINE_ATTRIBUTE}="${number}"></span>`;
+function withMarker(line: string, marker: string): string {
 	const hardBreak = HARD_BREAK.exec(line);
 	if (hardBreak === null) return line + marker;
 	return line.slice(0, hardBreak.index) + marker + hardBreak[0];
