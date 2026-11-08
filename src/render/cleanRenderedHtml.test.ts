@@ -74,4 +74,17 @@ describe("cleanRenderedHtml", () => {
 		expect(links.map((a) => a.textContent)).toEqual(["Figura 1", "the sphere"]);
 		expect(root.querySelector("#figure-bloch")?.tagName).toBe("FIGURE");
 	});
+
+	it("points links to an equation's block id at the equation and shows its number", () => {
+		const root = clean(
+			'<div class="math math-block"><mjx-container display="true">dS &gt; 0</mjx-container></div>' +
+				'<p><span data-underrock-block-id="entropia"></span></p>' +
+				'<p>Como dice la <a class="internal-link" data-href="#^entropia" href="#^entropia">^entropia</a>.</p>',
+			{ ...TEXT_LINKS, lang: "es" },
+		);
+		const link = root.querySelector("a");
+		expect(link?.getAttribute("href")).toBe("#equation-entropia");
+		expect(link?.textContent).toBe("Ecuación (1)");
+		expect(root.querySelector("#equation-entropia .underrock-equation-number")?.textContent).toBe("(1)");
+	});
 });

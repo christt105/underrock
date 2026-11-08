@@ -252,6 +252,19 @@ mjx-container[display="true"] {
 	overflow: visible;
 }
 
+.underrock-equation {
+	position: relative;
+	padding: 0 3em;
+}
+
+.underrock-equation-number {
+	position: absolute;
+	top: 50%;
+	right: 0;
+	transform: translateY(-50%);
+	font-variant-numeric: tabular-nums;
+}
+
 .mermaid {
 	text-align: center;
 }
