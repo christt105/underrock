@@ -3,7 +3,8 @@ import { opensBlock } from "./blockIds";
 /** Attribute of the marker that keeps a line's number in the note, from 0, in the rendered HTML. */
 export const SOURCE_LINE_ATTRIBUTE = "data-underrock-line";
 
-const HEADING = /^\s{0,3}#{1,6}(\s|$)/;
+/** A heading, also inside a list item or a quote, like `- ## Title` or `> ## Title`. */
+const HEADING = /^\s*((>\s*)|(([-*+]|\d+[.)])\s+))*#{1,6}(\s|$)/;
 const SETEXT_UNDERLINE = /^\s{0,3}(=+|-+)\s*$/;
 const THEMATIC_BREAK = /^\s{0,3}([-*_])(\s*\1){2,}\s*$/;
 const CALLOUT_HEADER = /^\s*(>\s*)+\[!/;
@@ -24,18 +25,33 @@ export function markSourceLines(markdown: string, firstLine: number): string {
 	const skip = new Array<boolean>(lines.length).fill(false);
 	let closes: ((line: string) => boolean) | null = null;
 	let inList = false;
+	let indentedCode = false;
 	for (let i = 0; i < lines.length; i++) {
 		const line = lines[i];
+		const blank = line.trim() === "";
+		const indented = INDENTED.test(line);
 		if (closes !== null) {
 			skip[i] = true;
 			if (closes(line)) closes = null;
 			continue;
 		}
-		closes = opensBlock(line);
-		const blank = line.trim() === "";
-		const previousBlank = i === 0 || lines[i - 1].trim() === "";
+		if (indentedCode) {
+			if (blank || indented) {
+				skip[i] = true;
+				continue;
+			}
+			indentedCode = false;
+		}
+		// An indented line continues a paragraph of text right above it; anywhere else outside a list it is code.
+		const previousIsText = i > 0 && !skip[i - 1] && lines[i - 1].trim() !== "";
 		if (LIST_ITEM.test(line)) inList = true;
-		else if (!blank && previousBlank && !INDENTED.test(line)) inList = false;
+		else if (!blank && !previousIsText && !indented) inList = false;
+		if (indented && !inList && !previousIsText) {
+			indentedCode = true;
+			skip[i] = true;
+			continue;
+		}
+		closes = opensBlock(line);
 		const next = lines[i + 1] ?? "";
 		if (
 			closes !== null ||
@@ -44,8 +60,7 @@ export function markSourceLines(markdown: string, firstLine: number): string {
 			THEMATIC_BREAK.test(line) ||
 			SETEXT_UNDERLINE.test(next) ||
 			CALLOUT_HEADER.test(line) ||
-			line.trim().startsWith("$$") ||
-			(INDENTED.test(line) && previousBlank && !inList)
+			line.trim().startsWith("$$")
 		) {
 			skip[i] = true;
 		} else if (line.includes("|") && TABLE_DELIMITER.test(next) && next.includes("-")) {

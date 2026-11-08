@@ -43,4 +43,20 @@ describe("markSourceLines", () => {
 		expect(markSourceLines("Text\n\n    code", 0)).toBe(`Text${mark(0)}\n\n    code`);
 		expect(markSourceLines("- item\n\n    more of the item", 0)).toBe(`- item${mark(0)}\n\n    more of the item${mark(2)}`);
 	});
+
+	it("leaves indented code right after a heading alone, all of its lines", () => {
+		const markdown = "##### SEGUNDA LEY\t\t\n\tEl calor fluye\n\tde lo caliente a lo frío\n\n\tsigue siendo código\nTexto";
+		expect(markSourceLines(markdown, 0)).toBe(`${markdown.slice(0, -"Texto".length)}Texto${mark(5)}`);
+	});
+
+	it("leaves headings in list items and quotes alone, but marks the item's text", () => {
+		const markdown = "- ##### Encoding on polarization:\n    El fotón\n> ## Quoted heading\n1. # Numbered";
+		expect(markSourceLines(markdown, 0)).toBe(
+			`- ##### Encoding on polarization:\n    El fotón${mark(1)}\n> ## Quoted heading\n1. # Numbered`,
+		);
+	});
+
+	it("marks an indented line that continues a paragraph", () => {
+		expect(markSourceLines("Una frase\n    que sigue", 0)).toBe(`Una frase${mark(0)}\n    que sigue${mark(1)}`);
+	});
 });
