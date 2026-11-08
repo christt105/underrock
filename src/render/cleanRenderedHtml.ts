@@ -4,6 +4,7 @@ import type { FigureEntry } from "./FigureEntry";
 import { numberEquations } from "./equations";
 import { wrapFigures } from "./figures";
 import { assignHeadingIds } from "./headingIds";
+import { noteAnchorId } from "./includeNotes";
 
 const APP_CHROME = [
 	".copy-code-button",
@@ -61,7 +62,16 @@ function rewriteInternalLinks(
 	options: CleanOptions,
 ): void {
 	for (const link of Array.from(root.querySelectorAll<HTMLAnchorElement>("a.internal-link"))) {
-		const target = link.getAttribute("data-href") ?? link.getAttribute("href") ?? "";
+		const href = link.getAttribute("data-href") ?? link.getAttribute("href") ?? "";
+		// Links to a note included in the document point within it, like links within the note.
+		const [notePart, ...subpath] = href.split("#");
+		const included = notePart === "" ? undefined : includedNote(notePart, options.includedNotes ?? []);
+		if (included !== undefined && subpath.length === 0) {
+			link.setAttribute("href", `#${noteAnchorId(included)}`);
+			link.removeAttribute("target");
+			continue;
+		}
+		const target = included !== undefined ? `#${subpath.join("#")}` : href;
 		if (target.startsWith("#^")) {
 			const blockId = target.slice(2);
 			const block = blockTargets.get(blockId);
@@ -88,6 +98,15 @@ function rewriteInternalLinks(
 		}
 		unwrap(link);
 	}
+}
+
+/** The included note a link's note name, like `2. Qubits` or `Physics/2. Qubits`, refers to. */
+function includedNote(name: string, paths: readonly string[]): string | undefined {
+	const wanted = name.trim().replace(/\.md$/i, "").toLowerCase();
+	return paths.find((path) => {
+		const withoutExtension = path.replace(/\.md$/i, "").toLowerCase();
+		return withoutExtension === wanted || withoutExtension.split("/").pop() === wanted;
+	});
 }
 
 function unwrap(el: Element): void {

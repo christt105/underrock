@@ -1,13 +1,12 @@
-import { Component, MarkdownRenderer, finishRenderMath, getFrontMatterInfo, loadMathJax } from "obsidian";
+import { Component, MarkdownRenderer, finishRenderMath, loadMathJax } from "obsidian";
 import type { App } from "obsidian";
 import type { CleanOptions } from "./CleanOptions";
 import type { RenderSource } from "./RenderSource";
 import type { RenderedNote } from "./RenderedNote";
-import { markBlockIds } from "./blockIds";
 import { cleanRenderedHtml } from "./cleanRenderedHtml";
 import { collectHeadings } from "./collectHeadings";
 import { collectMathCss } from "./collectMathCss";
-import { markSourceLines } from "./sourceLines";
+import { includeNotes } from "./includeNotes";
 import { waitForSettled } from "./waitForSettled";
 
 /** Renders a note with Obsidian's own Markdown renderer, so math, callouts and plugin output match the app. */
@@ -17,16 +16,18 @@ export async function renderNote(app: App, source: RenderSource, options: CleanO
 	const host = activeDocument.body.createDiv({ cls: "underrock-render-host" });
 	const content = host.createDiv({ cls: "markdown-preview-view markdown-rendered" });
 	try {
-		const { contentStart } = getFrontMatterInfo(source.markdown);
-		const firstLine = source.markdown.slice(0, contentStart).split("\n").length - 1;
-		const markdown = markSourceLines(markBlockIds(source.markdown.slice(contentStart)), firstLine);
+		const { markdown, included } = await includeNotes({ path: source.path, markdown: source.markdown }, async (link, fromPath) => {
+			const file = app.metadataCache.getFirstLinkpathDest(link, fromPath);
+			if (!file || file.extension !== "md") return null;
+			return { path: file.path, markdown: await app.vault.cachedRead(file) };
+		});
 		await MarkdownRenderer.render(app, markdown, content, source.path, component);
 		if (content.querySelector(".math")) {
 			await loadMathJax();
 			await finishRenderMath();
 		}
 		await waitForSettled(content, { quietMs: 250, timeoutMs: 10000 });
-		const figures = cleanRenderedHtml(content, options);
+		const figures = cleanRenderedHtml(content, { ...options, includedNotes: included });
 		return {
 			title: source.title,
 			html: content.innerHTML,

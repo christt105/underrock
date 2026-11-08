@@ -6,4 +6,6 @@ export interface CleanOptions {
 	readonly vaultName: string;
 	/** Document language (BCP 47), which picks the word in figure captions. */
 	readonly lang: string;
+	/** Vault paths of the notes included in the document, whose links become links within it. */
+	readonly includedNotes?: readonly string[];
 }
