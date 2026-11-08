@@ -1,4 +1,7 @@
-/** Turns heading text into an id usable as a URL fragment. */
+/**
+ * Turns heading text into an id usable as a URL fragment and as a CSS selector, which Paged.js looks
+ * ids up with for the page numbers in the table of contents: so it never starts with a digit.
+ */
 export function slugify(text: string): string {
 	const slug = text
 		.trim()
@@ -9,7 +12,8 @@ export function slugify(text: string): string {
 		.replace(/\s+/g, "-")
 		.replace(/-+/g, "-")
 		.replace(/^-|-$/g, "");
-	return slug === "" ? "section" : slug;
+	if (slug === "") return "section";
+	return /^\p{N}/u.test(slug) ? `section-${slug}` : slug;
 }
 
 /**
