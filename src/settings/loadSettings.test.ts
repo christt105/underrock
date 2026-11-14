@@ -33,6 +33,12 @@ describe("settingsForNote", () => {
 		expect(settingsForNote(global, { figureList: { enabled: false } }).figureList.enabled).toBe(false);
 	});
 
+	it("centres tables by default and lets a note pick another layout", () => {
+		expect(DEFAULT_SETTINGS.tables).toBe("center");
+		expect(settingsForNote(DEFAULT_SETTINGS, { tables: "full" }).tables).toBe("full");
+		expect(settingsForNote(DEFAULT_SETTINGS, { tables: "right" }).tables).toBe("center");
+	});
+
 	it("puts footnotes on their page by default and lets a note keep them at the end", () => {
 		expect(DEFAULT_SETTINGS.footnotes).toBe("page");
 		expect(settingsForNote(DEFAULT_SETTINGS, { footnotes: "end" }).footnotes).toBe("end");

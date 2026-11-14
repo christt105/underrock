@@ -227,6 +227,14 @@ export class UnderrockSettingTab extends PluginSettingTab {
 							options: { page: "At the bottom of the page", end: "At the end of the document" },
 						},
 					},
+					{
+						name: "Tables",
+						control: {
+							type: "dropdown",
+							key: "tables",
+							options: { center: "Centred, at their own width", left: "Left, at their own width", full: "Full text width" },
+						},
+					},
 				],
 			},
 		];
