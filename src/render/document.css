@@ -155,21 +155,24 @@ video {
 }
 
 /*
- * Images sit side by side while they fit and wrap below, centred, when they don't. An image with a
- * size, as in `![[photo.png|300]]`, keeps it unless it is wider than the page; one without takes
- * half the width, so two share a row and one left alone below is as big as those above.
+ * Each line of images in the note is a row. Images in a row share its width, except an image with a
+ * size, as in `![[photo.png|300]]`, which keeps it unless it is wider than the page; images with sizes
+ * that don't fit beside each other wrap below, centred.
  */
 .underrock-figure-row {
-	--ur-subfigure-gap: 1.5em;
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
 	align-items: flex-end;
-	gap: 1em var(--ur-subfigure-gap);
+	gap: 1em 1.5em;
+}
+
+.underrock-figure-row + .underrock-figure-row {
+	margin-top: 1em;
 }
 
 .underrock-subfigure {
-	flex: 0 1 calc((100% - var(--ur-subfigure-gap)) / 2);
+	flex: 1 1 0;
 	min-width: 0;
 	max-width: 100%;
 	margin: 0;
