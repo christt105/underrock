@@ -1,5 +1,5 @@
 import { PluginSettingTab } from "obsidian";
-import type { App, SettingDefinitionItem } from "obsidian";
+import type { App, SettingDefinitionItem, SettingDefinitionRender } from "obsidian";
 import type { PageSize } from "../pagination/PageSize";
 import type { HorizontalPosition, MarginSlot } from "../running/MarginSlot";
 import { BUILT_IN_TEMPLATES } from "../templates/builtInTemplates";
@@ -29,6 +29,12 @@ const POSITION_NAMES: Record<HorizontalPosition, string> = { left: "Left", cente
 const TEXT_ALIGN_NAMES: Record<TextAlign, string> = { left: "Left", center: "Centre", right: "Right", justify: "Justified" };
 
 const HEADING_SIZES: [string, string][] = [1, 2, 3, 4, 5, 6].map((level) => [`typography.h${level}Size`, `Heading ${level} size`]);
+
+interface NumberRange {
+	readonly min: number;
+	readonly max?: number;
+	readonly step: number;
+}
 
 const MARGINS: [string, string][] = [
 	["page.marginTopMm", "Top margin"],
@@ -69,11 +75,7 @@ export class UnderrockSettingTab extends PluginSettingTab {
 				items: [
 					{ name: "Page size", control: { type: "dropdown", key: "page.size", options: PAGE_SIZES } },
 					{ name: "Landscape", control: { type: "toggle", key: "page.landscape" } },
-					...MARGINS.map(([key, name]) => ({
-						name,
-						desc: "In millimetres.",
-						control: { type: "number" as const, key, min: 0, step: 1 },
-					})),
+					...MARGINS.map(([key, name]) => this.liveNumber(name, "In millimetres.", key, { min: 0, step: 1 })),
 				],
 			},
 			{
@@ -99,21 +101,9 @@ export class UnderrockSettingTab extends PluginSettingTab {
 						desc: "Font files in this folder (TTF, OTF, WOFF, WOFF2) can be used by name. Name them Family-Style, like Inter-Bold.ttf.",
 						control: { type: "folder", key: "typography.fontsFolder" },
 					},
-					{
-						name: "Body size",
-						desc: "In points.",
-						control: { type: "number", key: "typography.bodySize", min: 6, max: 72, step: 0.5 },
-					},
-					...HEADING_SIZES.map(([key, name]) => ({
-						name,
-						desc: "In points.",
-						control: { type: "number" as const, key, min: 6, max: 96, step: 0.5 },
-					})),
-					{
-						name: "Line height",
-						desc: "Multiple of the font size.",
-						control: { type: "number", key: "typography.lineHeight", min: 1, max: 3, step: 0.05 },
-					},
+					this.liveNumber("Body size", "In points.", "typography.bodySize", { min: 6, max: 72, step: 0.5 }),
+					...HEADING_SIZES.map(([key, name]) => this.liveNumber(name, "In points.", key, { min: 6, max: 96, step: 0.5 })),
+					this.liveNumber("Line height", "Multiple of the font size.", "typography.lineHeight", { min: 1, max: 3, step: 0.05 }),
 					{
 						name: "Text alignment",
 						desc: "Justified text is hyphenated using the document language.",
@@ -139,8 +129,8 @@ export class UnderrockSettingTab extends PluginSettingTab {
 					},
 					{
 						name: "Header",
-						desc: "Text at the top of each page. Can use {title}, {date}, {section}, {page} and {pages}.",
-						control: { type: "text", key: "headerFooter.header" },
+						desc: "Text at the top of each page, on as many lines as you write. Can use {title}, {date}, {section}, {page} and {pages}.",
+						control: { type: "textarea", key: "headerFooter.header", rows: 2 },
 					},
 					{
 						name: "Header position",
@@ -148,8 +138,8 @@ export class UnderrockSettingTab extends PluginSettingTab {
 					},
 					{
 						name: "Footer",
-						desc: "Text at the bottom of each page, with the same variables as the header.",
-						control: { type: "text", key: "headerFooter.footer" },
+						desc: "Text at the bottom of each page, with the same lines and variables as the header.",
+						control: { type: "textarea", key: "headerFooter.footer", rows: 2 },
 					},
 					{
 						name: "Footer position",
@@ -176,11 +166,7 @@ export class UnderrockSettingTab extends PluginSettingTab {
 						desc: "Adds a page before the note that lists its headings with their page numbers.",
 						control: { type: "toggle", key: "toc.enabled" },
 					},
-					{
-						name: "Contents depth",
-						desc: "Deepest heading level listed, from 1 to 6.",
-						control: { type: "number", key: "toc.depth", min: 1, max: 6, step: 1 },
-					},
+					this.liveNumber("Contents depth", "Deepest heading level listed, from 1 to 6.", "toc.depth", { min: 1, max: 6, step: 1 }),
 					{ name: "Contents title", control: { type: "text", key: "toc.title", placeholder: "Contents" } },
 					{
 						name: "PDF bookmarks",
@@ -247,6 +233,34 @@ export class UnderrockSettingTab extends PluginSettingTab {
 		const current = this.host.settings.template;
 		options[current] ??= current;
 		return options;
+	}
+
+	/**
+	 * A number field that saves as you type, so the preview follows it. Obsidian's own number control
+	 * only saves when the field loses focus. Values still being typed, out of range, are not saved.
+	 */
+	private liveNumber(name: string, desc: string, key: string, range: NumberRange): SettingDefinitionRender {
+		return {
+			name,
+			desc,
+			render: (setting) => {
+				setting.setName(name).setDesc(desc);
+				setting.addText((text) => {
+					text.inputEl.type = "number";
+					text.inputEl.min = String(range.min);
+					if (range.max !== undefined) text.inputEl.max = String(range.max);
+					text.inputEl.step = String(range.step);
+					const current = this.getControlValue(key);
+					text.setValue(typeof current === "number" ? String(current) : "");
+					text.onChange((raw) => {
+						const value = Number(raw);
+						if (raw.trim() === "" || !Number.isFinite(value) || value < range.min) return;
+						if (range.max !== undefined && value > range.max) return;
+						void this.setControlValue(key, value);
+					});
+				});
+			},
+		};
 	}
 
 	override getControlValue(key: string): unknown {
