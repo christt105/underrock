@@ -1,6 +1,7 @@
 import type { CleanOptions } from "./CleanOptions";
 import { markLayoutHints } from "../pagination/markLayoutHints";
 import type { FigureEntry } from "./FigureEntry";
+import { numberEquations } from "./equations";
 import { wrapFigures } from "./figures";
 import { assignHeadingIds } from "./headingIds";
 
@@ -26,9 +27,13 @@ export function cleanRenderedHtml(root: HTMLElement, options: CleanOptions): Fig
 	root.querySelectorAll(APP_CHROME).forEach((el) => el.remove());
 	unwrapBlockWrappers(root);
 	const figures = wrapFigures(root, options.lang);
+	const equations = numberEquations(root, options.lang);
 	const headingIds = assignHeadingIds(root);
-	const figuresByBlockId = new Map(figures.filter((figure) => figure.blockId !== "").map((figure) => [figure.blockId, figure]));
-	rewriteInternalLinks(root, headingIds, figuresByBlockId, options);
+	const blockTargets = new Map<string, BlockTarget>();
+	for (const target of [...figures, ...equations]) {
+		if (target.blockId !== "" && !blockTargets.has(target.blockId)) blockTargets.set(target.blockId, target);
+	}
+	rewriteInternalLinks(root, headingIds, blockTargets, options);
 	root.querySelectorAll("a.tag").forEach(unwrap);
 	markLayoutHints(root);
 	return figures;
@@ -43,21 +48,27 @@ function unwrapBlockWrappers(root: HTMLElement): void {
 	}
 }
 
+/** A numbered figure or equation that links to its block id point at. */
+interface BlockTarget {
+	readonly id: string;
+	readonly label: string;
+}
+
 function rewriteInternalLinks(
 	root: HTMLElement,
 	headingIds: Map<string, string>,
-	figures: Map<string, FigureEntry>,
+	blockTargets: Map<string, BlockTarget>,
 	options: CleanOptions,
 ): void {
 	for (const link of Array.from(root.querySelectorAll<HTMLAnchorElement>("a.internal-link"))) {
 		const target = link.getAttribute("data-href") ?? link.getAttribute("href") ?? "";
 		if (target.startsWith("#^")) {
 			const blockId = target.slice(2);
-			const figure = figures.get(blockId);
-			if (figure !== undefined) {
-				// Without an alias Obsidian shows the link itself, such as "^chart"; show the figure's number instead.
-				if ((link.textContent ?? "").trim().endsWith(`^${blockId}`)) link.textContent = figure.label;
-				link.setAttribute("href", `#${figure.id}`);
+			const block = blockTargets.get(blockId);
+			if (block !== undefined) {
+				// Without an alias Obsidian shows the link itself, such as "^chart"; show the number instead.
+				if ((link.textContent ?? "").trim().endsWith(`^${blockId}`)) link.textContent = block.label;
+				link.setAttribute("href", `#${block.id}`);
 				link.removeAttribute("target");
 				continue;
 			}

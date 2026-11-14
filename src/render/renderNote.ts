@@ -7,6 +7,7 @@ import { markBlockIds } from "./blockIds";
 import { cleanRenderedHtml } from "./cleanRenderedHtml";
 import { collectHeadings } from "./collectHeadings";
 import { collectMathCss } from "./collectMathCss";
+import { markSourceLines } from "./sourceLines";
 import { waitForSettled } from "./waitForSettled";
 
 /** Renders a note with Obsidian's own Markdown renderer, so math, callouts and plugin output match the app. */
@@ -17,7 +18,9 @@ export async function renderNote(app: App, source: RenderSource, options: CleanO
 	const content = host.createDiv({ cls: "markdown-preview-view markdown-rendered" });
 	try {
 		const { contentStart } = getFrontMatterInfo(source.markdown);
-		await MarkdownRenderer.render(app, markBlockIds(source.markdown.slice(contentStart)), content, source.path, component);
+		const firstLine = source.markdown.slice(0, contentStart).split("\n").length - 1;
+		const markdown = markSourceLines(markBlockIds(source.markdown.slice(contentStart)), firstLine);
+		await MarkdownRenderer.render(app, markdown, content, source.path, component);
 		if (content.querySelector(".math")) {
 			await loadMathJax();
 			await finishRenderMath();

@@ -12,6 +12,12 @@ describe("markBlockIds", () => {
 		expect(markBlockIds("![[a.png]]\n![[b.png]]\n^pair")).toBe(`![[a.png]]\n![[b.png]]\n${marker("pair")}`);
 	});
 
+	it("marks a block id on its own line right after display math", () => {
+		expect(markBlockIds("$$\ndS > 0\n$$\n^entropia")).toBe(`$$\ndS > 0\n$$\n${marker("entropia")}`);
+		expect(markBlockIds("$$dS \\ge 0$$\n^segunda")).toBe(`$$dS \\ge 0$$\n${marker("segunda")}`);
+		expect(markBlockIds("$$dS \\ge 0$$ ^segunda")).toBe(`$$dS \\ge 0$$ ${marker("segunda")}`);
+	});
+
 	it("leaves a lone block id after anything else alone", () => {
 		expect(markBlockIds("| a | b |\n| - | - |\n^table")).toBe("| a | b |\n| - | - |\n^table");
 	});
