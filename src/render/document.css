@@ -240,7 +240,8 @@ td {
 	vertical-align: top;
 }
 
-thead th {
+thead th,
+.sheets-row-header {
 	background: var(--ur-color-code-bg);
 	font-weight: 700;
 }
