@@ -7,6 +7,7 @@ import { buildPagedDocument } from "../pagination/buildPagedDocument";
 import { renderNote } from "../render/renderNote";
 import { marginBoxesCss } from "../running/marginBoxesCss";
 import type { RenderSource } from "../render/RenderSource";
+import { tableLayoutCss } from "../render/TableLayout";
 import { settingsForNote } from "../settings/loadSettings";
 import type { UnderrockSettings } from "../settings/UnderrockSettings";
 import { BUILT_IN_TEMPLATES } from "../templates/builtInTemplates";
@@ -41,11 +42,13 @@ export class DocumentBuilder {
 				settings.cover ? coverHtml({ title: source.title, author: source.author, date }) : "",
 				settings.toc.enabled ? tocHtml(note.headings, settings.toc) : "",
 				settings.figureList.enabled ? figureListHtml(note.figures, settings.figureList) : "",
+				settings.tableList.enabled ? figureListHtml(note.tables, settings.tableList, "table") : "",
 			],
 			extraCss: [
 				fontFaceCss(this.fontFiles(settings.typography.fontsFolder)),
 				await this.templateCss(settings),
 				typographyCss(settings.typography),
+				tableLayoutCss(settings.tables),
 				marginBoxesCss(settings.headerFooter, { title: source.title, date }),
 			],
 		});

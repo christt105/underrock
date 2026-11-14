@@ -14,13 +14,15 @@ function generatedContent(box: Locator): Promise<string> {
 
 describe("cover page", () => {
 	it("takes the first page alone, without page number, header or footer", async () => {
-		const css = marginBoxesCss({ ...DEFAULT_HEADER_FOOTER, header: "{title}", footer: "Footer" }, { title: "Title", date: "Date" });
+		const css = marginBoxesCss({ ...DEFAULT_HEADER_FOOTER, header: "{title}", headerRule: true, footer: "Footer" }, { title: "Title", date: "Date" });
 		const page = await paginate(longDocument(20), {
 			extraCss: [css],
 			leadingHtml: [coverHtml({ title: "A long report", author: "Ana", date: "30 October 2026" })],
 		});
 		const pages = page.locator(".pagedjs_page");
 		const first = pages.first();
+		expect(await first.locator(".pagedjs_margin-top").evaluate((el) => getComputedStyle(el).borderBottomStyle)).toBe("none");
+		expect(await pages.nth(1).locator(".pagedjs_margin-top").evaluate((el) => getComputedStyle(el).borderBottomStyle)).toBe("solid");
 		expect(await first.locator(".pagedjs_page_content").innerText()).toBe("A long report\n\nAna\n\n30 October 2026");
 		for (const slot of ["bottom-center", "top-right", "bottom-left"]) {
 			expect(await generatedContent(first.locator(`.pagedjs_margin-${slot}`))).toBe("none");

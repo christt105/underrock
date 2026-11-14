@@ -30,4 +30,40 @@ describe("page margins", () => {
 		expect(await generatedContent(first.locator(".pagedjs_margin-bottom-center"))).toBe("none");
 		await page.close();
 	});
+
+	it("underline the header when asked, except on a first page left bare", async () => {
+		const ruled = async (config: Partial<typeof DEFAULT_HEADER_FOOTER>) => {
+			const css = marginBoxesCss({ ...DEFAULT_HEADER_FOOTER, header: "Transport Networks", ...config }, { title: "Title", date: "Date" });
+			const page = await paginate(longDocument(20), { extraCss: [css] });
+			const borders = await page.evaluate(() =>
+				Array.from(document.querySelectorAll(".pagedjs_page .pagedjs_margin-top"), (top) => getComputedStyle(top).borderBottomStyle),
+			);
+			await page.close();
+			return borders;
+		};
+		const on = await ruled({ headerRule: true });
+		expect(on.length).toBeGreaterThan(1);
+		expect(on.every((style) => style === "solid")).toBe(true);
+		expect((await ruled({ headerRule: false })).every((style) => style === "none")).toBe(true);
+		const bareFirst = await ruled({ headerRule: true, onFirstPage: false });
+		expect(bareFirst[0]).toBe("none");
+		expect(bareFirst.slice(1).every((style) => style === "solid")).toBe(true);
+	});
+
+	it("show a header on several lines on as many lines", async () => {
+		const box = async (header: string) => {
+			const css = marginBoxesCss({ ...DEFAULT_HEADER_FOOTER, header }, { title: "Title", date: "Date" });
+			const page = await paginate("<p>Text</p>", { extraCss: [css] });
+			const height = await page
+				.locator(".pagedjs_page .pagedjs_margin-top-right .pagedjs_margin-content")
+				.first()
+				// The text is generated in ::after, so measure the box that wraps it.
+				.evaluate((el) => el.scrollHeight);
+			await page.close();
+			return height;
+		};
+		const one = await box("Transport Networks");
+		const two = await box("Transport Networks\nSara Prieto De la Rosa\n");
+		expect(two).toBeGreaterThan(one * 1.5);
+	});
 });

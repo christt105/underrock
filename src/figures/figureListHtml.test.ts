@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { DEFAULT_FIGURE_LIST } from "./FigureListSettings";
+import { DEFAULT_FIGURE_LIST, DEFAULT_TABLE_LIST } from "./FigureListSettings";
 import { figureListHtml } from "./figureListHtml";
 
 const FIGURES = [
@@ -16,6 +16,13 @@ describe("figureListHtml", () => {
 		);
 		expect(html).toContain('<a href="#underrock-figure-2"><span class="underrock-figure-list-label">Figura 2</span></a>');
 		expect(html.indexOf("figure-bloch")).toBeLessThan(html.indexOf("underrock-figure-2"));
+	});
+
+	it("lists tables the same way, with a class of their own", () => {
+		const tables = [{ id: "table-global", label: "Tabla 1", description: "Túneles de backup", blockId: "global" }];
+		const html = figureListHtml(tables, DEFAULT_TABLE_LIST, "table");
+		expect(html).toContain('<nav class="underrock-figure-list underrock-table-list"><p class="underrock-figure-list-title">List of tables</p>');
+		expect(html).toContain('<a href="#table-global"><span class="underrock-figure-list-label">Tabla 1</span>');
 	});
 
 	it("drops an empty title", () => {
