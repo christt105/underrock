@@ -242,6 +242,18 @@ td {
 	vertical-align: top;
 }
 
+table > caption {
+	caption-side: top;
+	margin-bottom: 0.4em;
+	font-size: 0.9em;
+	line-height: 1.3;
+	text-align: center;
+}
+
+.underrock-table-label {
+	font-weight: 700;
+}
+
 thead th,
 .sheets-row-header {
 	background: var(--ur-color-code-bg);

@@ -28,10 +28,23 @@ export function marginBoxesCss(config: HeaderFooter, values: RunningValues): str
 	if (!config.onFirstPage) {
 		css.push(`@page :first {\n${[...slots.keys()].map((slot) => `\t@${slot} {\n\t\tcontent: none;\n\t}`).join("\n")}\n}`);
 	}
+	if (config.headerRule && [...slots.keys()].some((slot) => slot.startsWith("top-"))) css.push(headerRuleCss(config.onFirstPage));
 	if ([config.header, config.footer, config.pageNumbers ? config.pageNumberFormat : ""].some((t) => t.includes("{section}"))) {
 		css.push("h1, h2 {\n\tstring-set: section content(text);\n}");
 	}
 	return `${css.join("\n")}\n`;
+}
+
+/**
+ * A line across the text width under the top margin, on the pages that show something there: not
+ * the cover, nor the first page when it is left bare.
+ */
+function headerRuleCss(onFirstPage: boolean): string {
+	const bare = [".pagedjs_cover_page .pagedjs_margin-top", ...(onFirstPage ? [] : [".pagedjs_first_page .pagedjs_margin-top"])];
+	return [
+		".pagedjs_margin-top:has(.hasContent) {\n\tborder-bottom: 0.5pt solid var(--ur-color-border);\n}",
+		`${bare.join(",\n")} {\n\tborder-bottom: none;\n}`,
+	].join("\n");
 }
 
 /**

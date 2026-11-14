@@ -7,6 +7,8 @@ export interface HeaderFooter {
 	readonly pageNumberFormat: string;
 	readonly header: string;
 	readonly headerPosition: HorizontalPosition;
+	/** Whether a thin line separates the header from the text. */
+	readonly headerRule: boolean;
 	readonly footer: string;
 	readonly footerPosition: HorizontalPosition;
 	/** Whether the first page gets the page number, header and footer too. */
@@ -19,6 +21,7 @@ export const DEFAULT_HEADER_FOOTER: HeaderFooter = {
 	pageNumberFormat: "{page}",
 	header: "",
 	headerPosition: "right",
+	headerRule: false,
 	footer: "",
 	footerPosition: "left",
 	onFirstPage: true,

@@ -45,6 +45,12 @@ describe("marginBoxesCss", () => {
 		expect(marginBoxesCss(DEFAULT_HEADER_FOOTER, VALUES)).not.toContain("white-space");
 	});
 
+	it("adds a header rule only when asked and something sits at the top", () => {
+		expect(marginBoxesCss({ ...DEFAULT_HEADER_FOOTER, header: "A", headerRule: true }, VALUES)).toContain("border-bottom: 0.5pt solid");
+		expect(marginBoxesCss({ ...DEFAULT_HEADER_FOOTER, header: "A" }, VALUES)).not.toContain("border-bottom");
+		expect(marginBoxesCss({ ...DEFAULT_HEADER_FOOTER, headerRule: true }, VALUES)).not.toContain("border-bottom");
+	});
+
 	it("is empty with nothing to show", () => {
 		expect(marginBoxesCss({ ...DEFAULT_HEADER_FOOTER, pageNumbers: false }, VALUES)).toBe("");
 	});

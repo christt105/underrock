@@ -137,6 +137,11 @@ export class UnderrockSettingTab extends PluginSettingTab {
 						control: { type: "dropdown", key: "headerFooter.headerPosition", options: POSITION_NAMES },
 					},
 					{
+						name: "Header rule",
+						desc: "A thin line between the header and the text.",
+						control: { type: "toggle", key: "headerFooter.headerRule" },
+					},
+					{
 						name: "Footer",
 						desc: "Text at the bottom of each page, with the same lines and variables as the header.",
 						control: { type: "textarea", key: "headerFooter.footer", rows: 2 },

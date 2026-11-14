@@ -96,6 +96,17 @@ describe("cleanRenderedHtml", () => {
 		expect(root.querySelector("#figure-bloch")?.tagName).toBe("FIGURE");
 	});
 
+	it("points links to a table's block id at the table and shows its number", () => {
+		const root = clean(
+			`<p>Tabla: Túneles <span data-underrock-block-id="global"></span></p><table><tbody><tr><td>x</td></tr></tbody></table>` +
+				'<p>Ver <a class="internal-link" data-href="#^global" href="#^global">^global</a>.</p>',
+			{ ...TEXT_LINKS, lang: "es" },
+		);
+		const link = root.querySelector("a");
+		expect(link?.getAttribute("href")).toBe("#table-global");
+		expect(link?.textContent).toBe("Tabla 1");
+	});
+
 	it("points links to an equation's block id at the equation and shows its number", () => {
 		const root = clean(
 			'<div class="math math-block"><mjx-container display="true">dS &gt; 0</mjx-container></div>' +

@@ -5,6 +5,7 @@ import { numberEquations } from "./equations";
 import { wrapFigures } from "./figures";
 import { placeFootnotesOnPages } from "./footnotes";
 import { assignHeadingIds } from "./headingIds";
+import { captionTables } from "./tables";
 import { noteAnchorId } from "./includeNotes";
 
 const APP_CHROME = [
@@ -37,10 +38,11 @@ export function cleanRenderedHtml(root: HTMLElement, options: CleanOptions): Fig
 	root.querySelectorAll(HIDDEN_BY_PLUGINS).forEach((el) => el.remove());
 	unwrapBlockWrappers(root);
 	const figures = wrapFigures(root, options.lang);
+	const tables = captionTables(root, options.lang);
 	const equations = numberEquations(root, options.lang);
 	const headingIds = assignHeadingIds(root);
 	const blockTargets = new Map<string, BlockTarget>();
-	for (const target of [...figures, ...equations]) {
+	for (const target of [...figures, ...tables, ...equations]) {
 		if (target.blockId !== "" && !blockTargets.has(target.blockId)) blockTargets.set(target.blockId, target);
 	}
 	rewriteInternalLinks(root, headingIds, blockTargets, options);
@@ -59,7 +61,7 @@ function unwrapBlockWrappers(root: HTMLElement): void {
 	}
 }
 
-/** A numbered figure or equation that links to its block id point at. */
+/** A numbered figure, table or equation that links to its block id point at. */
 interface BlockTarget {
 	readonly id: string;
 	readonly label: string;
