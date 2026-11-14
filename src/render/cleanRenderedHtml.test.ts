@@ -6,7 +6,7 @@ import { cleanRenderedHtml } from "./cleanRenderedHtml";
 
 beforeAll(stubObsidianDom);
 
-const TEXT_LINKS: CleanOptions = { links: "text", vaultName: "My Vault", lang: "en" };
+const TEXT_LINKS: CleanOptions = { links: "text", footnotes: "end", vaultName: "My Vault", lang: "en" };
 
 function clean(html: string, options: CleanOptions = TEXT_LINKS): HTMLElement {
 	const root = document.createElement("div");
@@ -46,9 +46,8 @@ describe("cleanRenderedHtml", () => {
 
 	it("can turn links to other notes into obsidian:// links", () => {
 		const root = clean('<p><a class="internal-link" data-href="Folder/Other note#Part">Other</a></p>', {
+			...TEXT_LINKS,
 			links: "obsidian-uri",
-			vaultName: "My Vault",
-			lang: "en",
 		});
 		expect(root.querySelector("a")?.getAttribute("href")).toBe(
 			"obsidian://open?vault=My%20Vault&file=Folder%2FOther%20note%23Part",
@@ -86,5 +85,17 @@ describe("cleanRenderedHtml", () => {
 		expect(link?.getAttribute("href")).toBe("#equation-entropia");
 		expect(link?.textContent).toBe("Ecuación (1)");
 		expect(root.querySelector("#equation-entropia .underrock-equation-number")?.textContent).toBe("(1)");
+	});
+
+	it("puts footnotes on the page that cites them, or leaves them at the end", () => {
+		const html =
+			'<p>Calor<sup class="footnote-ref" data-footnote-id="fnref-1"><a class="footnote-link" href="#fn-1">[1]</a></sup></p>' +
+			'<section class="footnotes"><hr><ol><li data-footnote-id="fn-1"><p>La nota.</p></li></ol></section>';
+		const onPage = clean(html, { ...TEXT_LINKS, footnotes: "page" });
+		expect(onPage.querySelector("p > .underrock-footnote")?.textContent).toBe("La nota.");
+		expect(onPage.querySelector("section.footnotes")).toBeNull();
+		const atEnd = clean(html, TEXT_LINKS);
+		expect(atEnd.querySelector(".underrock-footnote")).toBeNull();
+		expect(atEnd.querySelector("section.footnotes")).not.toBeNull();
 	});
 });
