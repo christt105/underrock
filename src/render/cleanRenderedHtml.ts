@@ -22,11 +22,19 @@ const APP_CHROME = [
 ].join(", ");
 
 /**
+ * Elements that plugins leave in the rendered HTML but hide with their own CSS, which the document
+ * doesn't carry. Sheets Extended keeps the cells a merge (`<`, `^`) swallowed, next to the cell that
+ * spans them.
+ */
+const HIDDEN_BY_PLUGINS = [".sheets-hidden-cell"].join(", ");
+
+/**
  * Strips Obsidian UI from rendered Markdown and rewrites links so the HTML stands on its own.
  * Returns the figures it numbered.
  */
 export function cleanRenderedHtml(root: HTMLElement, options: CleanOptions): FigureEntry[] {
 	root.querySelectorAll(APP_CHROME).forEach((el) => el.remove());
+	root.querySelectorAll(HIDDEN_BY_PLUGINS).forEach((el) => el.remove());
 	unwrapBlockWrappers(root);
 	const figures = wrapFigures(root, options.lang);
 	const equations = numberEquations(root, options.lang);
