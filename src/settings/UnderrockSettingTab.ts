@@ -137,6 +137,11 @@ export class UnderrockSettingTab extends PluginSettingTab {
 						control: { type: "dropdown", key: "headerFooter.headerPosition", options: POSITION_NAMES },
 					},
 					{
+						name: "Header rule",
+						desc: "A thin line between the header and the text.",
+						control: { type: "toggle", key: "headerFooter.headerRule" },
+					},
+					{
 						name: "Footer",
 						desc: "Text at the bottom of each page, with the same lines and variables as the header.",
 						control: { type: "textarea", key: "headerFooter.footer", rows: 2 },
@@ -185,6 +190,27 @@ export class UnderrockSettingTab extends PluginSettingTab {
 						control: { type: "toggle", key: "figureList.enabled" },
 					},
 					{ name: "List of figures title", control: { type: "text", key: "figureList.title", placeholder: "List of figures" } },
+				],
+			},
+			{
+				type: "group",
+				heading: "Tables",
+				items: [
+					{
+						name: "Table layout",
+						desc: "A line starting with Table:, or the word in the document language like Tabla:, right above a table becomes its numbered caption.",
+						control: {
+							type: "dropdown",
+							key: "tables",
+							options: { center: "Centred, at their own width", left: "Left, at their own width", full: "Full text width" },
+						},
+					},
+					{
+						name: "List of tables",
+						desc: "Adds a page before the note that lists its captioned tables with their page numbers.",
+						control: { type: "toggle", key: "tableList.enabled" },
+					},
+					{ name: "List of tables title", control: { type: "text", key: "tableList.title", placeholder: "List of tables" } },
 				],
 			},
 			{

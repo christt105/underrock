@@ -1,9 +1,11 @@
-import { DEFAULT_FIGURE_LIST } from "../figures/FigureListSettings";
+import { DEFAULT_FIGURE_LIST, DEFAULT_TABLE_LIST } from "../figures/FigureListSettings";
 import type { FigureListSettings } from "../figures/FigureListSettings";
 import { DEFAULT_PAGE_SETUP } from "../pagination/PageSetup";
 import type { PageSetup } from "../pagination/PageSetup";
 import type { FootnotePlacement } from "../render/FootnotePlacement";
 import type { LinkMode } from "../render/LinkMode";
+import { DEFAULT_TABLE_LAYOUT, TABLE_LAYOUTS } from "../render/TableLayout";
+import type { TableLayout } from "../render/TableLayout";
 import { DEFAULT_HEADER_FOOTER, HORIZONTAL_POSITIONS, MARGIN_SLOTS } from "../running/HeaderFooter";
 import type { HeaderFooter } from "../running/HeaderFooter";
 import { DEFAULT_TEMPLATE } from "../templates/builtInTemplates";
@@ -27,8 +29,10 @@ export interface UnderrockSettings {
 	/** Whether the PDF gets a bookmark for each heading. */
 	bookmarks: boolean;
 	figureList: FigureListSettings;
+	tableList: FigureListSettings;
 	links: LinkMode;
 	footnotes: FootnotePlacement;
+	tables: TableLayout;
 	/** Default document language (BCP 47), used for hyphenation. A note's `lang` frontmatter overrides it. */
 	language: string;
 }
@@ -43,8 +47,10 @@ export const DEFAULT_SETTINGS: UnderrockSettings = {
 	toc: DEFAULT_TOC,
 	bookmarks: true,
 	figureList: DEFAULT_FIGURE_LIST,
+	tableList: DEFAULT_TABLE_LIST,
 	links: "text",
 	footnotes: "page",
+	tables: DEFAULT_TABLE_LAYOUT,
 	language: "en",
 };
 
@@ -52,6 +58,7 @@ export const ALLOWED_VALUES: AllowedValues = {
 	"page.size": ["A4", "A5", "Letter", "Legal"],
 	links: ["text", "obsidian-uri"],
 	footnotes: ["page", "end"],
+	tables: TABLE_LAYOUTS,
 	"typography.textAlign": TEXT_ALIGNS,
 	"headerFooter.pageNumberPosition": MARGIN_SLOTS,
 	"headerFooter.headerPosition": HORIZONTAL_POSITIONS,

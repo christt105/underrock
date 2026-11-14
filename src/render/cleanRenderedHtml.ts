@@ -5,6 +5,8 @@ import { numberEquations } from "./equations";
 import { wrapFigures } from "./figures";
 import { placeFootnotesOnPages } from "./footnotes";
 import { assignHeadingIds } from "./headingIds";
+import { captionTables } from "./tables";
+import type { TableEntry } from "./tables";
 import { noteAnchorId } from "./includeNotes";
 
 const APP_CHROME = [
@@ -30,24 +32,25 @@ const HIDDEN_BY_PLUGINS = [".sheets-hidden-cell"].join(", ");
 
 /**
  * Strips Obsidian UI from rendered Markdown and rewrites links so the HTML stands on its own.
- * Returns the figures it numbered.
+ * Returns the figures and tables it numbered.
  */
-export function cleanRenderedHtml(root: HTMLElement, options: CleanOptions): FigureEntry[] {
+export function cleanRenderedHtml(root: HTMLElement, options: CleanOptions): { figures: FigureEntry[]; tables: TableEntry[] } {
 	root.querySelectorAll(APP_CHROME).forEach((el) => el.remove());
 	root.querySelectorAll(HIDDEN_BY_PLUGINS).forEach((el) => el.remove());
 	unwrapBlockWrappers(root);
 	const figures = wrapFigures(root, options.lang);
+	const tables = captionTables(root, options.lang);
 	const equations = numberEquations(root, options.lang);
 	const headingIds = assignHeadingIds(root);
 	const blockTargets = new Map<string, BlockTarget>();
-	for (const target of [...figures, ...equations]) {
+	for (const target of [...figures, ...tables, ...equations]) {
 		if (target.blockId !== "" && !blockTargets.has(target.blockId)) blockTargets.set(target.blockId, target);
 	}
 	rewriteInternalLinks(root, headingIds, blockTargets, options);
 	root.querySelectorAll("a.tag").forEach(unwrap);
 	if (options.footnotes === "page") placeFootnotesOnPages(root);
 	markLayoutHints(root);
-	return figures;
+	return { figures, tables };
 }
 
 function unwrapBlockWrappers(root: HTMLElement): void {
@@ -59,7 +62,7 @@ function unwrapBlockWrappers(root: HTMLElement): void {
 	}
 }
 
-/** A numbered figure or equation that links to its block id point at. */
+/** A numbered figure, table or equation that links to its block id point at. */
 interface BlockTarget {
 	readonly id: string;
 	readonly label: string;
