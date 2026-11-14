@@ -1,4 +1,4 @@
-import { SOURCE_LINE_ATTRIBUTE } from "../render/sourceLines";
+import { SOURCE_FILE_ATTRIBUTE, SOURCE_LINE_ATTRIBUTE } from "../render/sourceLines";
 
 /** A word picked in the preview, with the text around it in the same block. */
 export interface ClickedWord {
@@ -7,6 +7,8 @@ export interface ClickedWord {
 	readonly after: string;
 	/** The note's line the word is on, from 0, or null where lines are not marked, like headings and tables. */
 	readonly line: number | null;
+	/** Vault path of the included note the line is in, or null for the main note. */
+	readonly file: string | null;
 }
 
 /** A range of the note's Markdown, as character offsets. */
@@ -49,14 +51,21 @@ export function clickedWord(doc: Document): ClickedWord | null {
 	const after = doc.createRange();
 	after.setStart(range.endContainer, range.endOffset);
 	after.setEnd(context, context.childNodes.length);
-	return { word, before: before.toString(), after: after.toString(), line: block ? lineAfter(range, block) : null };
+	const marker = block ? markerAfter(range, block) : null;
+	return {
+		word,
+		before: before.toString(),
+		after: after.toString(),
+		line: marker ? Number(marker.getAttribute(SOURCE_LINE_ATTRIBUTE)) : null,
+		file: marker?.getAttribute(SOURCE_FILE_ATTRIBUTE) ?? null,
+	};
 }
 
 /**
- * The line in the first line marker after the selection, in its block or, where Paged.js split the
- * block across pages, in the parts that continue it.
+ * The first line marker after the selection, in its block or, where Paged.js split the block across
+ * pages, in the parts that continue it.
  */
-function lineAfter(range: Range, block: Element): number | null {
+function markerAfter(range: Range, block: Element): Element | null {
 	const parts = [block];
 	const ref = block.getAttribute("data-ref");
 	if (ref !== null) {
@@ -66,7 +75,7 @@ function lineAfter(range: Range, block: Element): number | null {
 	}
 	for (const part of parts) {
 		for (const marker of Array.from(part.querySelectorAll(`[${SOURCE_LINE_ATTRIBUTE}]`))) {
-			if (range.comparePoint(marker, 0) > 0) return Number(marker.getAttribute(SOURCE_LINE_ATTRIBUTE));
+			if (range.comparePoint(marker, 0) > 0) return marker;
 		}
 	}
 	return null;

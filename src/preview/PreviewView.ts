@@ -1,6 +1,7 @@
 import { ItemView, MarkdownView, Notice, debounce, setIcon } from "obsidian";
 import type { TFile, WorkspaceLeaf } from "obsidian";
 import { sourceFromFile } from "../render/sourceFromFile";
+import { SOURCE_FILE_ATTRIBUTE } from "../render/sourceLines";
 import type { PreviewHost } from "./PreviewHost";
 import { keepLinksInDocument } from "./inDocumentLinks";
 import { clickedWord, locateInSource } from "./sourceLocation";
@@ -14,6 +15,8 @@ const REFRESH_DELAY_MS = 800;
 /** Paginated preview of the active note, refreshed as it is edited. */
 export class PreviewView extends ItemView {
 	private file: TFile | null = null;
+	/** Vault paths of the notes the previewed note includes, which stay part of its preview. */
+	private includedPaths = new Set<string>();
 	private frame: HTMLIFrameElement | null = null;
 	private renderToken = 0;
 	private zoom = 1;
@@ -64,7 +67,7 @@ export class PreviewView extends ItemView {
 		);
 		this.registerEvent(
 			this.app.vault.on("modify", (file) => {
-				if (file === this.file) this.scheduleRender();
+				if (file === this.file || this.includedPaths.has(file.path)) this.scheduleRender();
 			}),
 		);
 		const resize = new ResizeObserver(() => {
@@ -110,7 +113,8 @@ export class PreviewView extends ItemView {
 
 	private followActiveNote(): void {
 		const active = this.app.workspace.getActiveViewOfType(MarkdownView)?.file ?? this.app.workspace.getActiveFile();
-		if (!active || active.extension !== "md" || active === this.file) {
+		// Opening a note the preview includes, such as a chapter, keeps the whole document in view.
+		if (!active || active.extension !== "md" || active === this.file || this.includedPaths.has(active.path)) {
 			if (!this.file) this.showStatus("Open a note to preview it.");
 			return;
 		}
@@ -131,10 +135,13 @@ export class PreviewView extends ItemView {
 		return undefined;
 	}
 
-	/** Moves the note's editor to the line and word double-clicked in the preview, opening the note if needed. */
+	/**
+	 * Moves the editor of the note, or of the included note, to the line and word double-clicked in
+	 * the preview, opening the note if needed.
+	 */
 	private async revealInEditor(doc: Document): Promise<void> {
-		const file = this.file;
 		const clicked = clickedWord(doc);
+		const file = clicked?.file ? this.app.vault.getFileByPath(clicked.file) : this.file;
 		if (!file || !clicked) return;
 		let view = this.markdownViewOf(file);
 		if (!view) {
@@ -191,6 +198,9 @@ export class PreviewView extends ItemView {
 		this.status.hide();
 		frame.contentWindow?.addEventListener("scroll", () => this.updatePageLabel(), { passive: true });
 		keepLinksInDocument(doc);
+		this.includedPaths = new Set(
+			Array.from(doc.querySelectorAll(`[${SOURCE_FILE_ATTRIBUTE}]`), (marker) => marker.getAttribute(SOURCE_FILE_ATTRIBUTE) ?? ""),
+		);
 		doc.addEventListener("dblclick", () => void this.revealInEditor(doc));
 		this.updatePageLabel();
 	}

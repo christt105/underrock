@@ -21,7 +21,7 @@ function at(source: string, word: string, nth = 0): number {
 	return i;
 }
 
-const clicked = (word: string, before: string, after: string, line: number | null = null): ClickedWord => ({ word, before, after, line });
+const clicked = (word: string, before: string, after: string, line: number | null = null): ClickedWord => ({ word, before, after, line, file: null });
 
 const marker = (n: number) => `<span data-underrock-line="${n}"></span>`;
 
@@ -80,7 +80,7 @@ describe("clickedWord", () => {
 	it("reads the selected word, the text around it in its block, and the line in the marker after it", () => {
 		document.body.innerHTML = `<p>Before${marker(1)}</p><p>Las redes <strong>cuánticas</strong>${marker(7)}<br>son más seguras.${marker(8)}</p>`;
 		select(document.querySelector("strong")?.firstChild as Node, 0, "cuánticas".length);
-		expect(clickedWord(document)).toEqual({ word: "cuánticas", before: "Las redes ", after: "son más seguras.", line: 7 });
+		expect(clickedWord(document)).toEqual({ word: "cuánticas", before: "Las redes ", after: "son más seguras.", line: 7, file: null });
 	});
 
 	it("finds the line in the part of a paragraph Paged.js moved to the next page", () => {
@@ -89,6 +89,12 @@ describe("clickedWord", () => {
 			`<div class="pagedjs_page"><p data-ref="r1" data-split-from="r1">entre páginas.${marker(12)}</p></div>`;
 		select(document.querySelector("p")?.firstChild as Node, 4, 9);
 		expect(clickedWord(document)?.line).toBe(12);
+	});
+
+	it("reads which included note the line comes from", () => {
+		document.body.innerHTML = '<p>Un qubit<span data-underrock-line="5" data-underrock-file="Fisica/2. Qubits.md"></span></p>';
+		select(document.querySelector("p")?.firstChild as Node, 3, 8);
+		expect(clickedWord(document)).toMatchObject({ word: "qubit", line: 5, file: "Fisica/2. Qubits.md" });
 	});
 
 	it("has no line in blocks without markers, like headings", () => {

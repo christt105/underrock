@@ -14,6 +14,12 @@ describe("slugify", () => {
 	it("falls back to a generic id when nothing is left", () => {
 		expect(slugify("!!!")).toBe("section");
 	});
+
+	it("never starts with a digit, which is not a valid CSS selector", () => {
+		expect(slugify("1. Introduction")).toBe("section-1-introduction");
+		expect(slugify("1.2 PRINCIPIOS")).toBe("section-12-principios");
+		expect(() => document.querySelector(`#${slugify("1. Introduction")}`)).not.toThrow();
+	});
 });
 
 describe("assignHeadingIds", () => {
