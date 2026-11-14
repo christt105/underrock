@@ -34,6 +34,16 @@ underrock:
 ```
 
 `page` takes `size` (`A4`, `A5`, `Letter`, `Legal`), `landscape` and `marginTopMm`, `marginRightMm`, `marginBottomMm`, `marginLeftMm`. `typography` takes `bodyFont`, `headingFont`, `codeFont`, `bodySize`, `h1Size` to `h6Size` (points), `lineHeight`, `textColor`, `headingColor` (`#rrggbb`) and `fontsFolder`. `headerFooter` takes `pageNumbers`, `pageNumberPosition` (`top-left` to `bottom-right`), `pageNumberFormat`, `header`, `headerPosition`, `footer`, `footerPosition` (`left`, `center`, `right`) and `onFirstPage`. Header, footer and page number accept `{page}`, `{pages}`, `{title}`, `{date}` (the note's `date` property, or today) and `{section}` (the current level 1 or 2 heading).
+
+A header or footer can take several lines, written as a YAML block:
+
+```yaml
+underrock:
+  headerFooter:
+    header: |
+      Transport Networks
+      {section}
+```
 `template` and `templatesFolder` take a template name and a vault folder. `cover` is `true` or `false`. `toc` takes `enabled`, `depth` (1 to 6) and `title`, and `bookmarks` is `true` or `false`.
 
 ## Templates
