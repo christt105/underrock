@@ -25,6 +25,28 @@ describe("cleanRenderedHtml", () => {
 		expect(root.querySelector(".collapse-indicator")).toBeNull();
 	});
 
+	it("drops the cells a Sheets Extended merge swallowed and keeps the spans", () => {
+		// | Method | Type | Element |
+		// | Global | <    | Path    |
+		// | Local  | Link | A       |
+		// | ^      | Node | B       |
+		const root = clean(
+			"<table><thead><tr><th>Method</th><th>Type</th><th>Element</th></tr></thead><tbody>" +
+				'<tr><td class="sheets-merged-anchor" colspan="2">Global</td><td class="sheets-hidden-cell">&lt;</td><td>Path</td></tr>' +
+				'<tr><td class="sheets-merged-anchor" rowspan="2">Local</td><td>Link</td><td>A</td></tr>' +
+				'<tr><td class="sheets-hidden-cell">^</td><td>Node</td><td>B</td></tr>' +
+				"</tbody></table>",
+		);
+		const rows = Array.from(root.querySelectorAll("tbody tr"), (tr) => Array.from(tr.children, (td) => td.textContent));
+		expect(rows).toEqual([
+			["Global", "Path"],
+			["Local", "Link", "A"],
+			["Node", "B"],
+		]);
+		expect(root.querySelector("td")?.getAttribute("colspan")).toBe("2");
+		expect(root.querySelectorAll("td")[2]?.getAttribute("rowspan")).toBe("2");
+	});
+
 	it("unwraps the per-block el-* wrappers so blocks are siblings", () => {
 		const root = clean('<div class="el-h1"><h1>A</h1></div><div class="el-p"><p>B</p></div><div class="callout el-x"></div>');
 		expect(Array.from(root.children).map((c) => c.tagName)).toEqual(["H1", "P", "DIV"]);
