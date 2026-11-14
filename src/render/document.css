@@ -154,7 +154,11 @@ video {
 	text-align: center;
 }
 
-/* At most two images side by side; the rest wrap below, centred, at the same width. */
+/*
+ * Images sit side by side while they fit and wrap below, centred, when they don't. An image with a
+ * size, as in `![[photo.png|300]]`, keeps it unless it is wider than the page; one without takes
+ * half the width, so two share a row and one left alone below is as big as those above.
+ */
 .underrock-figure-row {
 	--ur-subfigure-gap: 1.5em;
 	display: flex;
@@ -167,7 +171,12 @@ video {
 .underrock-subfigure {
 	flex: 0 1 calc((100% - var(--ur-subfigure-gap)) / 2);
 	min-width: 0;
+	max-width: 100%;
 	margin: 0;
+}
+
+.underrock-subfigure:has(img[width]) {
+	flex: 0 0 auto;
 }
 
 .underrock-subfigure figcaption {
