@@ -32,4 +32,10 @@ describe("settingsForNote", () => {
 		const global = loadSettings({ figureList: { enabled: true } });
 		expect(settingsForNote(global, { figureList: { enabled: false } }).figureList.enabled).toBe(false);
 	});
+
+	it("puts footnotes on their page by default and lets a note keep them at the end", () => {
+		expect(DEFAULT_SETTINGS.footnotes).toBe("page");
+		expect(settingsForNote(DEFAULT_SETTINGS, { footnotes: "end" }).footnotes).toBe("end");
+		expect(settingsForNote(DEFAULT_SETTINGS, { footnotes: "margin" }).footnotes).toBe("page");
+	});
 });

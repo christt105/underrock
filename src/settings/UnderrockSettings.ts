@@ -2,6 +2,7 @@ import { DEFAULT_FIGURE_LIST } from "../figures/FigureListSettings";
 import type { FigureListSettings } from "../figures/FigureListSettings";
 import { DEFAULT_PAGE_SETUP } from "../pagination/PageSetup";
 import type { PageSetup } from "../pagination/PageSetup";
+import type { FootnotePlacement } from "../render/FootnotePlacement";
 import type { LinkMode } from "../render/LinkMode";
 import { DEFAULT_HEADER_FOOTER, HORIZONTAL_POSITIONS, MARGIN_SLOTS } from "../running/HeaderFooter";
 import type { HeaderFooter } from "../running/HeaderFooter";
@@ -27,6 +28,7 @@ export interface UnderrockSettings {
 	bookmarks: boolean;
 	figureList: FigureListSettings;
 	links: LinkMode;
+	footnotes: FootnotePlacement;
 	/** Default document language (BCP 47), used for hyphenation. A note's `lang` frontmatter overrides it. */
 	language: string;
 }
@@ -42,12 +44,14 @@ export const DEFAULT_SETTINGS: UnderrockSettings = {
 	bookmarks: true,
 	figureList: DEFAULT_FIGURE_LIST,
 	links: "text",
+	footnotes: "page",
 	language: "en",
 };
 
 export const ALLOWED_VALUES: AllowedValues = {
 	"page.size": ["A4", "A5", "Letter", "Legal"],
 	links: ["text", "obsidian-uri"],
+	footnotes: ["page", "end"],
 	"typography.textAlign": TEXT_ALIGNS,
 	"headerFooter.pageNumberPosition": MARGIN_SLOTS,
 	"headerFooter.headerPosition": HORIZONTAL_POSITIONS,

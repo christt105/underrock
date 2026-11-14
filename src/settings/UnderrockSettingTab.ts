@@ -219,6 +219,14 @@ export class UnderrockSettingTab extends PluginSettingTab {
 							options: { text: "Plain text", "obsidian-uri": "Open the note in Obsidian" },
 						},
 					},
+					{
+						name: "Footnotes",
+						control: {
+							type: "dropdown",
+							key: "footnotes",
+							options: { page: "At the bottom of the page", end: "At the end of the document" },
+						},
+					},
 				],
 			},
 		];

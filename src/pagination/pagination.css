@@ -13,6 +13,17 @@ li {
 	widows: 2;
 }
 
+.underrock-footnote {
+	float: footnote;
+}
+
+@page {
+	@footnote {
+		border-top: 0.5pt solid var(--ur-color-border);
+		padding-top: 0.4em;
+	}
+}
+
 tr,
 img,
 svg,
@@ -77,4 +88,11 @@ pre.underrock-short {
 	font-family: var(--ur-font-body);
 	font-size: 9pt;
 	color: var(--ur-color-muted);
+}
+
+[data-footnote-call]::after {
+	vertical-align: super;
+	font-size: 0.7em;
+	line-height: 0;
+	font-variant-position: normal;
 }
