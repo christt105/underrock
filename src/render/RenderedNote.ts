@@ -1,5 +1,6 @@
 import type { HeadingEntry } from "./HeadingEntry";
 import type { FigureEntry } from "./FigureEntry";
+import type { TableEntry } from "./tables";
 
 /** A note rendered to self-contained HTML, ready to be placed in a document. */
 export interface RenderedNote {
@@ -9,4 +10,5 @@ export interface RenderedNote {
 	readonly mathCss: string;
 	readonly headings: readonly HeadingEntry[];
 	readonly figures: readonly FigureEntry[];
+	readonly tables: readonly TableEntry[];
 }

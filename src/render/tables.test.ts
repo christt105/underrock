@@ -23,7 +23,7 @@ describe("captionTables", () => {
 		expect(captionEl?.querySelector("strong")).not.toBeNull();
 		expect(root.querySelector("p")).toBeNull();
 		expect(root.querySelector("table")?.id).toBe("table-global");
-		expect(entries).toEqual([{ id: "table-global", label: "Tabla 1", blockId: "global" }]);
+		expect(entries).toEqual([{ id: "table-global", label: "Tabla 1", description: "Túneles de backup", blockId: "global" }]);
 	});
 
 	it("accepts 'Table:' in any language and numbers only the tables with a caption", () => {

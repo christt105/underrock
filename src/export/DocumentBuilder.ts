@@ -42,6 +42,7 @@ export class DocumentBuilder {
 				settings.cover ? coverHtml({ title: source.title, author: source.author, date }) : "",
 				settings.toc.enabled ? tocHtml(note.headings, settings.toc) : "",
 				settings.figureList.enabled ? figureListHtml(note.figures, settings.figureList) : "",
+				settings.tableList.enabled ? figureListHtml(note.tables, settings.tableList, "table") : "",
 			],
 			extraCss: [
 				fontFaceCss(this.fontFiles(settings.typography.fontsFolder)),

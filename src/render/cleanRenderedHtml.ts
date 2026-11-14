@@ -6,6 +6,7 @@ import { wrapFigures } from "./figures";
 import { placeFootnotesOnPages } from "./footnotes";
 import { assignHeadingIds } from "./headingIds";
 import { captionTables } from "./tables";
+import type { TableEntry } from "./tables";
 import { noteAnchorId } from "./includeNotes";
 
 const APP_CHROME = [
@@ -31,9 +32,9 @@ const HIDDEN_BY_PLUGINS = [".sheets-hidden-cell"].join(", ");
 
 /**
  * Strips Obsidian UI from rendered Markdown and rewrites links so the HTML stands on its own.
- * Returns the figures it numbered.
+ * Returns the figures and tables it numbered.
  */
-export function cleanRenderedHtml(root: HTMLElement, options: CleanOptions): FigureEntry[] {
+export function cleanRenderedHtml(root: HTMLElement, options: CleanOptions): { figures: FigureEntry[]; tables: TableEntry[] } {
 	root.querySelectorAll(APP_CHROME).forEach((el) => el.remove());
 	root.querySelectorAll(HIDDEN_BY_PLUGINS).forEach((el) => el.remove());
 	unwrapBlockWrappers(root);
@@ -49,7 +50,7 @@ export function cleanRenderedHtml(root: HTMLElement, options: CleanOptions): Fig
 	root.querySelectorAll("a.tag").forEach(unwrap);
 	if (options.footnotes === "page") placeFootnotesOnPages(root);
 	markLayoutHints(root);
-	return figures;
+	return { figures, tables };
 }
 
 function unwrapBlockWrappers(root: HTMLElement): void {

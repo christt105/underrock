@@ -194,6 +194,27 @@ export class UnderrockSettingTab extends PluginSettingTab {
 			},
 			{
 				type: "group",
+				heading: "Tables",
+				items: [
+					{
+						name: "Table layout",
+						desc: "A line starting with Table:, or the word in the document language like Tabla:, right above a table becomes its numbered caption.",
+						control: {
+							type: "dropdown",
+							key: "tables",
+							options: { center: "Centred, at their own width", left: "Left, at their own width", full: "Full text width" },
+						},
+					},
+					{
+						name: "List of tables",
+						desc: "Adds a page before the note that lists its captioned tables with their page numbers.",
+						control: { type: "toggle", key: "tableList.enabled" },
+					},
+					{ name: "List of tables title", control: { type: "text", key: "tableList.title", placeholder: "List of tables" } },
+				],
+			},
+			{
+				type: "group",
 				heading: "Content",
 				items: [
 					{
@@ -216,14 +237,6 @@ export class UnderrockSettingTab extends PluginSettingTab {
 							type: "dropdown",
 							key: "footnotes",
 							options: { page: "At the bottom of the page", end: "At the end of the document" },
-						},
-					},
-					{
-						name: "Tables",
-						control: {
-							type: "dropdown",
-							key: "tables",
-							options: { center: "Centred, at their own width", left: "Left, at their own width", full: "Full text width" },
 						},
 					},
 				],

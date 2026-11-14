@@ -18,6 +18,8 @@ export interface TableEntry {
 	readonly id: string;
 	/** Its number with the word before it, like "Table 3". */
 	readonly label: string;
+	/** Its caption without the label, for the list of tables. */
+	readonly description: string;
 	/** Its block id, like `results` for `^results`, empty if it has none. */
 	readonly blockId: string;
 }
@@ -44,11 +46,12 @@ export function captionTables(root: HTMLElement, lang: string): TableEntry[] {
 		caption.append(createSpan({ cls: "underrock-table-label", text: `${label}:` }), " ", ...Array.from(paragraph.childNodes));
 		table.prepend(caption);
 		paragraph.remove();
+		const description = (caption.textContent ?? "").slice(label.length + 1).replace(/\s+/g, " ").trim();
 		const blockId = caption.querySelector(`[${BLOCK_ID_ATTRIBUTE}]`)?.getAttribute(BLOCK_ID_ATTRIBUTE) ?? "";
 		const named = blockId !== "" && !blockIds.has(blockId);
 		if (named) blockIds.add(blockId);
 		table.id = named ? `table-${blockId}` : `underrock-table-${number}`;
-		entries.push({ id: table.id, label, blockId: named ? blockId : "" });
+		entries.push({ id: table.id, label, description, blockId: named ? blockId : "" });
 	}
 	return entries;
 }

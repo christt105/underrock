@@ -1,4 +1,4 @@
-import { DEFAULT_FIGURE_LIST } from "../figures/FigureListSettings";
+import { DEFAULT_FIGURE_LIST, DEFAULT_TABLE_LIST } from "../figures/FigureListSettings";
 import type { FigureListSettings } from "../figures/FigureListSettings";
 import { DEFAULT_PAGE_SETUP } from "../pagination/PageSetup";
 import type { PageSetup } from "../pagination/PageSetup";
@@ -29,6 +29,7 @@ export interface UnderrockSettings {
 	/** Whether the PDF gets a bookmark for each heading. */
 	bookmarks: boolean;
 	figureList: FigureListSettings;
+	tableList: FigureListSettings;
 	links: LinkMode;
 	footnotes: FootnotePlacement;
 	tables: TableLayout;
@@ -46,6 +47,7 @@ export const DEFAULT_SETTINGS: UnderrockSettings = {
 	toc: DEFAULT_TOC,
 	bookmarks: true,
 	figureList: DEFAULT_FIGURE_LIST,
+	tableList: DEFAULT_TABLE_LIST,
 	links: "text",
 	footnotes: "page",
 	tables: DEFAULT_TABLE_LAYOUT,

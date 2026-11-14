@@ -27,13 +27,14 @@ export async function renderNote(app: App, source: RenderSource, options: CleanO
 			await finishRenderMath();
 		}
 		await waitForSettled(content, { quietMs: 250, timeoutMs: 10000 });
-		const figures = cleanRenderedHtml(content, { ...options, includedNotes: included });
+		const { figures, tables } = cleanRenderedHtml(content, { ...options, includedNotes: included });
 		return {
 			title: source.title,
 			html: content.innerHTML,
 			mathCss: collectMathCss(activeDocument),
 			headings: collectHeadings(content),
 			figures,
+			tables,
 		};
 	} finally {
 		component.unload();
