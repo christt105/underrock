@@ -20,7 +20,8 @@ type Line = Node[];
 
 /**
  * Turns paragraphs that hold images into numbered figures. Images on consecutive lines share a
- * paragraph, so they become one figure with its images side by side, labelled (a), (b)… The caption,
+ * paragraph, so they become one figure, labelled (a), (b)…: images on the same line sit side by side,
+ * and each line of images is a row below the one before. The caption,
  * as in "Figure 3: …", is the line of text right below the images followed by each image's alt text
  * after its letter; a single image without that line is captioned with its alt text. Text right
  * above the images stays a paragraph of its own.
@@ -35,7 +36,8 @@ export function wrapFigures(root: HTMLElement, lang: string): FigureEntry[] {
 	for (const paragraph of Array.from(root.querySelectorAll("p"))) {
 		const parts = splitParagraph(paragraph);
 		if (parts === null) continue;
-		const { before, images, after } = parts;
+		const { before, rows, after } = parts;
+		const images = rows.flat();
 		const blockId = paragraph.querySelector(`[${BLOCK_ID_ATTRIBUTE}]`)?.getAttribute(BLOCK_ID_ATTRIBUTE) ?? "";
 		const space = () => paragraph.ownerDocument.createTextNode(" ");
 		const pieces: Node[][] = after.length > 0 ? [joinLines(after, space)] : [];
@@ -56,9 +58,12 @@ export function wrapFigures(root: HTMLElement, lang: string): FigureEntry[] {
 		if (images.length === 1) {
 			figure.append(images[0]);
 		} else {
-			const row = createDiv({ cls: "underrock-figure-row" });
-			row.append(...images.map(subfigure));
-			figure.append(row);
+			let index = 0;
+			for (const line of rows) {
+				const row = createDiv({ cls: "underrock-figure-row" });
+				row.append(...line.map((image) => subfigure(image, index++)));
+				figure.append(row);
+			}
 		}
 		const figcaption = createEl("figcaption");
 		if (caption.length > 0) {
@@ -99,10 +104,10 @@ function figureWord(lang: string): string {
 }
 
 /**
- * Splits a paragraph into its lines of text above the images, the images and its lines of text
- * below them, or null if it has no images or text between them.
+ * Splits a paragraph into its lines of text above the images, the images line by line and its lines
+ * of text below them, or null if it has no images or text between them.
  */
-function splitParagraph(paragraph: HTMLParagraphElement): { before: Line[]; images: Element[]; after: Line[] } | null {
+function splitParagraph(paragraph: HTMLParagraphElement): { before: Line[]; rows: Element[][]; after: Line[] } | null {
 	const lines = paragraphLines(paragraph);
 	const isImageLine = lines.map((line) => line.some(isImage) && line.every((node) => isImage(node) || isBlank(node)));
 	const first = isImageLine.indexOf(true);
@@ -110,7 +115,7 @@ function splitParagraph(paragraph: HTMLParagraphElement): { before: Line[]; imag
 	if (first === -1 || isImageLine.slice(first, last + 1).includes(false)) return null;
 	return {
 		before: lines.slice(0, first),
-		images: lines.slice(first, last + 1).flat().filter(isImage),
+		rows: lines.slice(first, last + 1).map((line) => line.filter(isImage)),
 		after: lines.slice(last + 1),
 	};
 }

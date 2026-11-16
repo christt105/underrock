@@ -35,12 +35,20 @@ describe("wrapFigures", () => {
 		expect(captions(wrap('<p><img alt="A running dog" src="dog.jpg"></p>'))).toEqual(["Figure 1: A running dog"]);
 	});
 
-	it("puts images on consecutive lines side by side, labelled (a), (b)…", () => {
-		const root = wrap(`<p>${embed("tx.png")}<br>\n${embed("rx.png")}</p>`);
-		const row = root.querySelector(".underrock-figure > .underrock-figure-row");
-		expect(Array.from(row?.children ?? []).map((c) => c.className)).toEqual(["underrock-subfigure", "underrock-subfigure"]);
+	it("puts images on the same line side by side, labelled (a), (b)…", () => {
+		const root = wrap(`<p>${embed("tx.png")}${embed("rx.png")}</p>`);
+		const rows = root.querySelectorAll(".underrock-figure > .underrock-figure-row");
+		expect(rows).toHaveLength(1);
+		expect(Array.from(rows[0].children, (c) => c.className)).toEqual(["underrock-subfigure", "underrock-subfigure"]);
 		expect(captions(root, ".underrock-subfigure > figcaption")).toEqual(["(a)", "(b)"]);
 		expect(captions(root)).toEqual(["Figure 1"]);
+	});
+
+	it("makes each line of images a row of the same figure, lettered across rows", () => {
+		const root = wrap(`<p>${embed("a.png")}${embed("b.png")}<br>\n${embed("c.png")}</p>`);
+		const rows = Array.from(root.querySelectorAll(".underrock-figure > .underrock-figure-row"));
+		expect(rows.map((row) => Array.from(row.querySelectorAll("figcaption"), (c) => c.textContent))).toEqual([["(a)", "(b)"], ["(c)"]]);
+		expect(root.querySelectorAll("figure.underrock-figure")).toHaveLength(1);
 	});
 
 	it("follows the line below with each image's alt text after its letter", () => {
