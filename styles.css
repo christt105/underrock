@@ -7,12 +7,19 @@
 	pointer-events: none;
 }
 
+/*
+ * Inside the window but invisible: Chromium runs no animation frames for a webview placed off
+ * screen, and Paged.js waits for them, so the pagination would never start.
+ */
 .underrock-print-webview {
 	position: fixed;
 	top: 0;
-	left: -10000px;
+	left: 0;
+	z-index: -1;
 	width: 800px;
 	height: 1100px;
+	opacity: 0;
+	pointer-events: none;
 }
 
 .underrock-preview {
