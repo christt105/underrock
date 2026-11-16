@@ -31,9 +31,17 @@ export const HEADING_POSITIONS = `Array.from(document.querySelectorAll(".pagedjs
 	}));
 })`;
 
-/** Script that replaces the current page with `html`, running its scripts. */
+/** What the host page adds to its body when it finishes starting up: Obsidian's splash, with its logo. */
+const HOST_SPLASH = ".starter-screen";
+
+/**
+ * Script that replaces the current page with `html`, running its scripts. The host page may still
+ * be starting up and add its splash to the new document, so anything it adds is removed at once.
+ */
 export function writeDocumentScript(html: string): string {
-	return `document.open(); document.write(${JSON.stringify(html)}); document.close(); true`;
+	return `document.open(); document.write(${JSON.stringify(html)}); document.close();
+new MutationObserver(() => document.querySelectorAll("body > ${HOST_SPLASH}").forEach((el) => el.remove())).observe(document.body, { childList: true });
+true`;
 }
 
 /** Prints a self-paginating HTML document to PDF with Electron's `printToPDF`. */

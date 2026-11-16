@@ -29,7 +29,15 @@ describe("printing a paged document", () => {
 			const page = await browser.newPage();
 			await page.goto(pathToFileURL(file).href);
 			await page.evaluate(writeDocumentScript(html));
+			// The host page's splash, added late, must not reach the document.
+			await page.evaluate(() => {
+				const splash = document.createElement("div");
+				splash.className = "starter-screen";
+				splash.textContent = "Obsidian";
+				document.body.append(splash);
+			});
 			await page.evaluate(WAIT_FOR_PAGINATION);
+			expect(await page.locator(".starter-screen").count()).toBe(0);
 			const pages = await page.locator(".pagedjs_page").count();
 			const headings = await page.evaluate<HeadingPosition[]>(HEADING_POSITIONS);
 			const printed = await page.pdf({ preferCSSPageSize: true, printBackground: true });
